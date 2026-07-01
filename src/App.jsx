@@ -18,31 +18,22 @@ import TermsConditions from "./pages/TermsConditions";
 
 function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename={import.meta.env.BASE_URL}>
       <Navbar />
 
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/about" element={<About />} />
-           <Route path="/founder" element={<Founder />} />
-
-        <Route path="/scholarships" element={<Scholarship/>} />
+        <Route path="/founder" element={<Founder />} />
+        <Route path="/scholarships" element={<Scholarship />} />
         <Route path="/transparency" element={<Transparency />} />
         <Route path="/volunteer" element={<Volunteer />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/donate" element={<Donate />} />
-       <Route path="/apply" element={<Apply />} />
-       <Route path="/scholarship" element={<Scholarship />} />
-     
-      <Route
-  path="/privacy-policy"
-  element={<PrivacyPolicy />}
-/>
-
-<Route
-  path="/terms-and-conditions"
-  element={<TermsConditions />}
-/>
+        <Route path="/apply" element={<Apply />} />
+        <Route path="/scholarship" element={<Scholarship />} />
+        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+        <Route path="/terms-and-conditions" element={<TermsConditions />} />
       </Routes>
 
       <Footer />
