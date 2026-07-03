@@ -4,7 +4,7 @@ import {
   FaLaptop,
   FaHeart,
 } from "react-icons/fa";
-
+import PageTitle from "../components/PageTitle";
 function Donate() {
   const donationPlans = [
     {
@@ -39,7 +39,7 @@ function Donate() {
 
   return (
     <div className="bg-slate-50">
-
+<PageTitle title="Donate" />
       {/* Hero Section */}
 
       <section className="bg-gradient-to-r from-slate-950 via-blue-950 to-slate-900 text-white py-28">

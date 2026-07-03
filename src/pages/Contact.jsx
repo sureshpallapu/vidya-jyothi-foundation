@@ -6,7 +6,7 @@ import {
   FaWhatsapp,
   FaClock,
 } from "react-icons/fa";
-
+import PageTitle from "../components/PageTitle";
 function Contact() {
   const [formData, setFormData] = useState({
     fullName: "",
@@ -63,7 +63,7 @@ function Contact() {
 
   return (
     <div className="bg-slate-50">
-
+<PageTitle title="Contact Us" />
       {/* Hero */}
 
       <section className="bg-gradient-to-r from-slate-950 via-blue-950 to-slate-900 text-white py-24">

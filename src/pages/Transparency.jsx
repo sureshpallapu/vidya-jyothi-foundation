@@ -5,7 +5,7 @@ import {
   FaShieldAlt,
   FaCheckCircle,
 } from "react-icons/fa";
-
+import PageTitle from "../components/PageTitle";
 function Transparency() {
   const principles = [
     {
@@ -49,7 +49,7 @@ function Transparency() {
 
   return (
     <div className="bg-slate-50">
-
+<PageTitle title="Transparency" />
       {/* Hero */}
 
       <section className="bg-gradient-to-r from-slate-950 via-blue-950 to-slate-900 text-white py-24">

@@ -5,9 +5,12 @@ import RequiredDocuments from "../components/scholarship/RequiredDocuments";
 import ScholarshipCTA from "../components/scholarship/ScholarshipCTA";
 import SelectionProcess from "../components/scholarship/SelectionProcess";
 import ScholarshipGuidelines from "../components/scholarship/ScholarshipGuidelines";
+import PageTitle from "../components/PageTitle";
+
 function Scholarship() {
   return (
     <>
+    <PageTitle title="Scholarships" />
       <ScholarshipHero />
       <ScholarshipOverview />
       <EligibilitySection />

@@ -5,11 +5,11 @@ import OurStory from "../components/about/OurStory";
 import VisionMission from "../components/about/VisionMission"; 
 import CoreValues from "../components/about/CoreValues";
 
-
+import PageTitle from "../components/PageTitle";
 function About() {
   return (
     <div className="bg-slate-50">
-
+  <PageTitle title="About Us" />
       <AboutHero />
 <FounderMessage />
  <VisionMission />
