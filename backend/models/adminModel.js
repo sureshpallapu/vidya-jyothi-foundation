@@ -6,35 +6,27 @@ const db = require("../config/db");
 |--------------------------------------------------------------------------
 */
 
-const getAdminByUsername = (username) => {
-  return new Promise((resolve, reject) => {
+const getAdminByUsername = async (username) => {
 
-    const sql = `
-      SELECT
-        id,
-        username,
-        full_name,
-        email,
-        mobile,
-        role,
-        status,
-        password
-      FROM admins
-      WHERE username = ?
-      LIMIT 1
-    `;
+  const sql = `
+    SELECT
+      id,
+      username,
+      full_name,
+      email,
+      mobile,
+      role,
+      status,
+      password
+    FROM admins
+    WHERE username = ?
+    LIMIT 1
+  `;
 
-    db.query(sql, [username], (err, result) => {
+  const [rows] = await db.query(sql, [username]);
 
-      if (err) return reject(err);
-
-      resolve(result[0]);
-
-    });
-
-  });
+  return rows[0];
 };
-
 
 /*
 |--------------------------------------------------------------------------
@@ -55,8 +47,8 @@ const getAdminById = async (id) => {
   );
 
   return rows[0];
-
 };
+
 module.exports = {
   getAdminByUsername,
   getAdminById,

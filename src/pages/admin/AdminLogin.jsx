@@ -13,7 +13,10 @@ const navigate = useNavigate();
 const handleLogin = async (e) => {
   e.preventDefault();
 
+  console.log("Login clicked");
+
   try {
+    console.log("Sending request...");
 
     const response = await axios.post(
       "http://localhost:5000/api/admin/login",
@@ -23,47 +26,24 @@ const handleLogin = async (e) => {
       }
     );
 
+    console.log(response.data);
+
     if (response.data.success) {
-
-      /*
-      |--------------------------------------------------------------------------
-      | Save Login Session
-      |--------------------------------------------------------------------------
-      */
-
-      localStorage.setItem(
-        "adminLoggedIn",
-        "true"
-      );
-
-      /*
-      |--------------------------------------------------------------------------
-      | Save Admin Details
-      |--------------------------------------------------------------------------
-      */
-
+      localStorage.setItem("adminLoggedIn", "true");
       localStorage.setItem(
         "admin",
         JSON.stringify(response.data.admin)
       );
 
+      console.log("Navigating...");
+
       navigate("/admin/dashboard");
-
     } else {
-
-      alert("Invalid Username or Password");
-
+      alert("Invalid username or password");
     }
-
   } catch (error) {
-
     console.error(error);
-
-    alert(
-      error.response?.data?.message ||
-      "Login Failed"
-    );
-
+    alert("Login failed");
   }
 };
 
