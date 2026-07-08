@@ -11,7 +11,7 @@ import Volunteer from "./pages/Volunteer";
 import Contact from "./pages/Contact";
 import Founder from "./pages/Founder";
 import Donate from "./pages/Donate";
-import Apply from "./pages/Apply";
+// import Apply from "./pages/Apply";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsConditions from "./pages/TermsConditions";
 
@@ -24,6 +24,21 @@ import PhotoGallery from "./pages/gallery/PhotoGallery";
 import EventsVisits from "./pages/gallery/EventsVisits";
 import MediaCoverage from "./pages/gallery/MediaCoverage";
 import VideoGallery from "./pages/gallery/VideoGallery";
+
+
+import AdminLogin from "./pages/admin/AdminLogin";
+import AdminLayout from "./layouts/AdminLayout";
+import Dashboard from "./pages/admin/Dashboard";
+import ProtectedRoute from "./components/admin/ProtectedRoute";
+
+
+import ScholarshipApplication from "./pages/scholarship/ScholarshipApplication";
+import ApplicationSuccess from "./pages/scholarship/ApplicationSuccess";
+import CheckStatus from "./pages/scholarship/CheckStatus";
+
+
+import Applications from "./pages/admin/applications/Applications";
+import ApplicationDetails from "./pages/admin/applications/ApplicationDetails";
 
 
 function App() {
@@ -41,7 +56,10 @@ function App() {
         <Route path="/volunteer" element={<Volunteer />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/donate" element={<Donate />} />
-        <Route path="/apply" element={<Apply />} />
+       <Route
+  path="/apply"
+  element={<ScholarshipApplication />}
+/>
         <Route path="/scholarship" element={<Scholarship />} />
         <Route path="/privacy-policy" element={<PrivacyPolicy />} />
         <Route path="/terms-and-conditions" element={<TermsConditions />} />
@@ -68,7 +86,53 @@ function App() {
   element={<VideoGallery />}
 /><Route path="*" element={<NotFound />} />
     
-    </Routes>
+
+<Route path="/admin/login" element={<AdminLogin />} />
+
+<Route
+  path="/admin"
+  element={
+    <ProtectedRoute>
+      <AdminLayout />
+    </ProtectedRoute>
+  }
+>
+  <Route
+    path="dashboard"
+    element={<Dashboard />}
+  />
+
+  <Route
+    path="applications"
+    element={<Applications />}
+  />
+
+  <Route
+  path="applications/:id"
+  element={<ApplicationDetails />}
+/>
+</Route>
+
+<Route
+  path="/apply-scholarship"
+  element={<ScholarshipApplication />}
+/>
+
+<Route
+  path="/application-success"
+  element={<ApplicationSuccess />}
+/>
+
+<Route
+  path="/check-status"
+  element={<CheckStatus />}
+/>
+
+
+
+
+
+ </Routes>
 
       <Footer />
     </BrowserRouter>
