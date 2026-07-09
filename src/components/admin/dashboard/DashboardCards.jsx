@@ -7,7 +7,7 @@ import {
   FaMoneyCheckAlt,
   FaTimesCircle,
 } from "react-icons/fa";
-
+import { FaCalendarAlt } from "react-icons/fa";
 import StatCard from "./StatCard";
 
 function DashboardCards({ stats }) {
@@ -71,6 +71,17 @@ function DashboardCards({ stats }) {
         icon={<FaTimesCircle />}
         link="/admin/applications?status=Rejected"
       />
+
+
+<StatCard
+  title="Scholarship Cycles"
+  value={stats.activeCycles}
+  color="#0F766E"
+  icon={<FaCalendarAlt />}
+  link="/admin/cycles"
+/>
+
+
 
     </div>
 

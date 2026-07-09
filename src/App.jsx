@@ -39,7 +39,7 @@ import CheckStatus from "./pages/scholarship/CheckStatus";
 
 import Applications from "./pages/admin/applications/Applications";
 import ApplicationDetails from "./pages/admin/applications/ApplicationDetails";
-
+import ScholarshipCycles from "./pages/admin/scholarshipCycles/ScholarshipCycles";
 
 function App() {
   return (
@@ -110,6 +110,10 @@ function App() {
   <Route
   path="applications/:id"
   element={<ApplicationDetails />}
+/>
+<Route
+  path="cycles"
+  element={<ScholarshipCycles />}
 />
 </Route>
 

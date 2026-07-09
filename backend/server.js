@@ -13,6 +13,11 @@ const applicationWorkflowRoutes = require("./routes/applicationWorkflowRoutes");
 const app = express();
 const applicationHistoryRoutes =
 require("./routes/applicationHistoryRoutes");
+
+const scholarshipCycleRoutes =
+require("./routes/scholarshipCycleRoutes");
+
+
 /*
 |--------------------------------------------------------------------------
 | Middleware
@@ -38,10 +43,17 @@ app.use("/api/admin", applicationRoutes);
 app.use("/api/admin", applicationDetailsRoutes);
 app.use("/api/admin", applicationWorkflowRoutes);
 app.use("/api/scholarship", scholarshipRoutes);
+
 app.use(
   "/api/admin",
   applicationHistoryRoutes
 );
+
+app.use(
+  "/api/admin",
+  scholarshipCycleRoutes
+);
+
 /*
 |--------------------------------------------------------------------------
 | Test Routes

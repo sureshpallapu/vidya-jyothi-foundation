@@ -42,7 +42,7 @@ const handleLogin = async (e) => {
       alert("Invalid username or password");
     }
   } catch (error) {
-    console.error(error);
+    console.log(error);
     alert("Login failed");
   }
 };
