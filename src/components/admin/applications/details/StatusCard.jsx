@@ -121,6 +121,7 @@ console.log("Application Status:", application.status);
     ]?.[
       application.status
     ] || [];
+    const canTakeAction = availableOptions.length > 0;
 console.log("Available:", availableOptions);
   /*
   |--------------------------------------------------------------------------
@@ -167,7 +168,21 @@ console.log("Available:", availableOptions);
           />
 
         </div>
+<div className="rounded-lg bg-blue-50 border border-blue-200 p-3">
 
+  <p className="text-sm text-blue-700">
+
+    Logged in as:
+
+    <strong className="ml-1">
+
+      {admin?.role?.replaceAll("_", " ")}
+
+    </strong>
+
+  </p>
+
+</div>
         {/* Next Action */}
 
         <div>
@@ -273,7 +288,28 @@ console.log("Available:", availableOptions);
             : "Save Workflow"}
 
         </button>
+{canTakeAction ? (
 
+  <>
+    {/* Next Action */}
+    {/* Sanctioned Amount */}
+    {/* Remarks */}
+    {/* Save Button */}
+  </>
+
+) : (
+
+  <div className="rounded-lg bg-gray-50 border p-4 text-center">
+
+    <p className="text-gray-500">
+
+      No workflow actions are available for your role at the current application status.
+
+    </p>
+
+  </div>
+
+)}
       </div>
 
     </SectionCard>

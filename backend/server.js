@@ -17,7 +17,8 @@ require("./routes/applicationHistoryRoutes");
 const scholarshipCycleRoutes =
 require("./routes/scholarshipCycleRoutes");
 
-
+const adminManagementRoutes =
+require("./routes/adminManagementRoutes");
 /*
 |--------------------------------------------------------------------------
 | Middleware
@@ -48,7 +49,10 @@ app.use(
   "/api/admin",
   applicationHistoryRoutes
 );
-
+app.use(
+  "/api/admin",
+  adminManagementRoutes
+);
 app.use(
   "/api/admin",
   scholarshipCycleRoutes

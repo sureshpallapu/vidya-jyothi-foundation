@@ -1,5 +1,7 @@
 import { NavLink } from "react-router-dom";
-
+import Swal from "sweetalert2";
+import { logout } from "../../../utils/adminAuth";
+import { useNavigate } from "react-router-dom";
 import {
   FaTachometerAlt,
   FaFileAlt,
@@ -14,37 +16,136 @@ import {
 
 function Sidebar({ collapsed }) {
   const admin = JSON.parse(localStorage.getItem("admin")) || {};
+const role = admin.role || "";
 
-  const menus = [
-    { heading: "MAIN MENU" },
+ const menus = [
 
-    {
-      title: "Dashboard",
-      icon: <FaTachometerAlt />,
-      path: "/admin/dashboard",
-    },
-    {
-      title: "Applications",
-      icon: <FaFileAlt />,
-      path: "/admin/applications",
-    },
+  {
+    heading: "MAIN MENU",
+  },
 
-    { heading: "MANAGEMENT" },
+  {
+    title: "Dashboard",
+    icon: <FaTachometerAlt />,
+    path: "/admin/dashboard",
+    roles: [
+      "SUPER_ADMIN",
+      "FOUNDER",
+      "VERIFICATION_OFFICER",
+      "ACCOUNTS",
+    ],
+  },
 
-    { title: "Admins", icon: <FaUsers />, path: "/admin/admins" },
-    {
-      title: "Scholarship Cycles",
-      icon: <FaCalendarAlt />,
-      path: "/admin/cycles",
-    },
-    { title: "Reports", icon: <FaChartBar />, path: "/admin/reports" },
-    { title: "Settings", icon: <FaCog />, path: "/admin/settings" },
-  ];
+  {
+    title: "Applications",
+    icon: <FaFileAlt />,
+    path: "/admin/applications",
+    roles: [
+      "SUPER_ADMIN",
+      "FOUNDER",
+      "VERIFICATION_OFFICER",
+      "ACCOUNTS",
+    ],
+  },
 
-  const logout = () => {
-    localStorage.clear();
-    window.location.href = "/admin/login";
-  };
+  {
+    heading: "MANAGEMENT",
+  },
+
+  {
+    title: "Admins",
+    icon: <FaUsers />,
+    path: "/admin/admins",
+    roles: [
+      "SUPER_ADMIN",
+    ],
+  },
+
+  {
+    title: "Scholarship Cycles",
+    icon: <FaCalendarAlt />,
+    path: "/admin/cycles",
+    roles: [
+      "SUPER_ADMIN",
+      "FOUNDER",
+    ],
+  },
+
+  {
+    title: "Reports",
+    icon: <FaChartBar />,
+    path: "/admin/reports",
+    roles: [
+      "SUPER_ADMIN",
+      "FOUNDER",
+      "ACCOUNTS",
+    ],
+  },
+
+  {
+    title: "Settings",
+    icon: <FaCog />,
+    path: "/admin/settings",
+    roles: [
+      "SUPER_ADMIN",
+    ],
+  },
+
+];
+
+const visibleMenus = menus.filter((menu) => {
+
+  if (menu.heading) {
+
+    return true;
+
+  }
+
+  return menu.roles.includes(role);
+
+});
+
+
+const navigate = useNavigate();
+
+const handleLogout = async () => {
+
+  const result = await Swal.fire({
+
+    title: "Logout",
+
+    text: "Are you sure you want to logout?",
+
+    icon: "question",
+
+    showCancelButton: true,
+
+    confirmButtonText: "Logout",
+
+    cancelButtonText: "Cancel",
+
+    reverseButtons: true,
+
+    confirmButtonColor: "#dc2626",
+
+  });
+
+  if (!result.isConfirmed) {
+
+    return;
+
+  }
+
+  logout();
+
+  navigate("/admin/login", {
+
+    replace: true,
+
+  });
+
+};
+ 
 
   return (
     <aside
@@ -75,7 +176,7 @@ function Sidebar({ collapsed }) {
 
       {/* Navigation */}
       <div className="flex-1 overflow-y-auto py-5 px-3">
-        {menus.map((menu, index) => {
+        {visibleMenus.map((menu, index) => {
           /* Section Heading */
           if (menu.heading) {
             return !collapsed ? (
@@ -129,7 +230,7 @@ function Sidebar({ collapsed }) {
       {/* Logout */}
       <div className="p-4">
         <button
-          onClick={logout}
+          onClick={handleLogout}
           className="w-full flex items-center justify-center gap-3 rounded-xl bg-red-600 hover:bg-red-700 py-3 transition"
         >
           <FaSignOutAlt />

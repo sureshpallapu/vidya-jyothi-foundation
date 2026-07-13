@@ -51,19 +51,24 @@ const WORKFLOW = {
 | Allowed Roles
 |
 */
-
 const ROLE_PERMISSIONS = {
 
   Submitted: {
 
     "Documents Verified": [
+
       "VERIFICATION_OFFICER",
+
       "SUPER_ADMIN",
+
     ],
 
     Rejected: [
+
       "VERIFICATION_OFFICER",
+
       "SUPER_ADMIN",
+
     ],
 
   },
@@ -71,13 +76,19 @@ const ROLE_PERMISSIONS = {
   "Documents Verified": {
 
     "Under Review": [
+
       "REVIEW_OFFICER",
+
       "SUPER_ADMIN",
+
     ],
 
     Rejected: [
+
       "REVIEW_OFFICER",
+
       "SUPER_ADMIN",
+
     ],
 
   },
@@ -85,13 +96,19 @@ const ROLE_PERMISSIONS = {
   "Under Review": {
 
     Approved: [
+
       "FOUNDER",
+
       "SUPER_ADMIN",
+
     ],
 
     Rejected: [
+
       "FOUNDER",
+
       "SUPER_ADMIN",
+
     ],
 
   },
@@ -99,8 +116,11 @@ const ROLE_PERMISSIONS = {
   Approved: {
 
     "Scholarship Released": [
+
       "ACCOUNTS",
+
       "SUPER_ADMIN",
+
     ],
 
   },

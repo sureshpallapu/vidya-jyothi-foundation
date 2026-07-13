@@ -1,6 +1,6 @@
-const {
-  getAdminByUsername,
-} = require("../models/adminModel");
+const bcrypt = require("bcrypt");
+
+const { getAdminByUsername } = require("../models/adminModel");
 
 /*
 |--------------------------------------------------------------------------
@@ -35,10 +35,11 @@ const login = async (req, res) => {
       });
     }
 
-    // If passwords are stored as plain text, temporarily use:
-    // const passwordMatch = password === admin.password;
-
-  const passwordMatch = password === admin.password;
+    // Passwords are stored as bcrypt hashes (see adminManagementController's
+    // createAdministrator / resetAdministratorPassword), so they must be
+    // compared with bcrypt.compare — a plain `===` check will always fail
+    // against a hash, which is what was causing every login to 401.
+    const passwordMatch = await bcrypt.compare(password, admin.password);
 
     if (!passwordMatch) {
       return res.status(401).json({
@@ -60,7 +61,6 @@ const login = async (req, res) => {
         status: admin.status,
       },
     });
-
   } catch (error) {
     console.error(error);
 

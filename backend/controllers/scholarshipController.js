@@ -1,5 +1,5 @@
 const generateApplicationId = require("../utils/generateApplicationId");
-
+console.log("===== CREATE APPLICATION API HIT =====");
 const {
   createApplication,
   checkDuplicateApplication,

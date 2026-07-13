@@ -1,59 +1,88 @@
 const db = require("../config/db");
-const { APPLICATION_PREFIX } = require("../config/constants");
 
-const generateApplicationId = () => {
-  return new Promise((resolve, reject) => {
+const {
+  APPLICATION_PREFIX,
+} = require("../config/constants");
 
-    // Get active scholarship cycle
-    const cycleSql = `
-      SELECT id, scholarship_year
-      FROM scholarship_cycles
-      WHERE is_active = TRUE
-      LIMIT 1
-    `;
+const generateApplicationId = async () => {
 
-    db.query(cycleSql, (err, cycleResult) => {
+  /*
+  |--------------------------------------------------------------------------
+  | Get Active Scholarship Cycle
+  |--------------------------------------------------------------------------
+  */
 
-      if (err) return reject(err);
+  const cycleSql = `
+    SELECT
+      id,
+      scholarship_year
+    FROM scholarship_cycles
+    WHERE is_active = TRUE
+    LIMIT 1
+  `;
 
-      if (cycleResult.length === 0) {
-        return reject(new Error("No active scholarship cycle found."));
-      }
+  const [cycleResult] =
+    await db.query(cycleSql);
 
-      const cycle = cycleResult[0];
+  if (cycleResult.length === 0) {
 
-      // Find highest sequence number
-      const sequenceSql = `
-        SELECT MAX(application_sequence) AS lastSequence
-        FROM scholarship_applications
-        WHERE cycle_id = ?
-      `;
+    throw new Error(
+      "No active scholarship cycle found."
+    );
 
-      db.query(sequenceSql, [cycle.id], (err, sequenceResult) => {
+  }
 
-        if (err) return reject(err);
+  const cycle = cycleResult[0];
 
-        const lastSequence =
-          sequenceResult[0].lastSequence || 0;
+  /*
+  |--------------------------------------------------------------------------
+  | Get Last Sequence
+  |--------------------------------------------------------------------------
+  */
 
-        const nextSequence = lastSequence + 1;
+  const sequenceSql = `
+    SELECT
+      MAX(application_sequence)
+      AS lastSequence
+    FROM scholarship_applications
+    WHERE cycle_id = ?
+  `;
 
-        const applicationId =
-          APPLICATION_PREFIX +
-          cycle.scholarship_year +
-          String(nextSequence).padStart(5, "0");
+  const [sequenceResult] =
+    await db.query(
+      sequenceSql,
+      [cycle.id]
+    );
 
-        resolve({
-          cycleId: cycle.id,
-          applicationId,
-          applicationSequence: nextSequence,
-        });
+  const lastSequence =
+    sequenceResult[0].lastSequence || 0;
 
-      });
+  const nextSequence =
+    lastSequence + 1;
 
-    });
+  /*
+  |--------------------------------------------------------------------------
+  | Generate Application ID
+  |--------------------------------------------------------------------------
+  */
 
-  });
+  const applicationId =
+    APPLICATION_PREFIX +
+    cycle.scholarship_year +
+    String(nextSequence).padStart(5, "0");
+
+  return {
+
+    cycleId: cycle.id,
+
+    applicationId,
+
+    applicationSequence:
+      nextSequence,
+
+  };
+
 };
 
-module.exports = generateApplicationId;
+module.exports =
+  generateApplicationId;
