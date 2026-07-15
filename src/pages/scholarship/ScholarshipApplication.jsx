@@ -66,55 +66,131 @@ function ScholarshipApplication() {
 
 
 const handleFinalSubmit = async () => {
+
   try {
+
     setLoading(true);
 
-    // Prepare application data
+    /*
+    |--------------------------------------------------------------------------
+    | Prepare Application Data
+    |--------------------------------------------------------------------------
+    */
+
     const applicationData = {
       ...formData,
     };
 
-    // Remove frontend-only fields
     delete applicationData.documents;
     delete applicationData.confirmAccountNumber;
     delete applicationData.declarationAccepted;
     delete applicationData.studentPlace;
     delete applicationData.studentDate;
 
-    // Save application
-const response = await submitApplication(applicationData);
+    /*
+    |--------------------------------------------------------------------------
+    | Step 1
+    | Create Application
+    |--------------------------------------------------------------------------
+    */
+
+    const response =
+      await submitApplication(applicationData);
+
     const {
       applicationId,
       id,
     } = response.data;
 
-    // Prepare documents
-    const uploadData = new FormData();
+    /*
+    |--------------------------------------------------------------------------
+    | Step 2
+    | Upload Documents
+    |--------------------------------------------------------------------------
+    */
 
-    Object.entries(formData.documents).forEach(([key, file]) => {
+    const uploadData =
+      new FormData();
+
+    Object.entries(
+      formData.documents
+    ).forEach(([key, file]) => {
+
       if (file) {
-        uploadData.append(key, file);
+
+        uploadData.append(
+          key,
+          file
+        );
+
       }
+
     });
 
-    // Upload documents
-await uploadScholarshipDocuments(id, uploadData);
+    try {
 
-navigate("/application-success", {
-  state: {
-    applicationId,
-  },
-});
-  } catch (error) {
+      await uploadScholarshipDocuments(
+        id,
+        uploadData
+      );
+
+    }
+
+    catch (uploadError) {
+
+      console.error(uploadError);
+
+      alert(
+
+        "Application submitted successfully.\n\nSome documents could not be uploaded.\nPlease contact the administrator."
+
+      );
+
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Success Page
+    |--------------------------------------------------------------------------
+    */
+
+    navigate(
+      "/application-success",
+      {
+
+        state: {
+
+          applicationId,
+
+        },
+
+        replace: true,
+
+      }
+    );
+
+  }
+
+  catch (error) {
+
     console.error(error);
 
     alert(
+
       error.response?.data?.message ||
+
       "Application submission failed."
+
     );
-  } finally {
-    setLoading(false);
+
   }
+
+  finally {
+
+    setLoading(false);
+
+  }
+
 };
 
   

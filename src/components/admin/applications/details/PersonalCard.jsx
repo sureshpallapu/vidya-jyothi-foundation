@@ -1,112 +1,142 @@
+import {
+  FaUser,
+  FaUserFriends,
+  FaBirthdayCake,
+  FaVenusMars,
+  FaPhoneAlt,
+  FaEnvelope,
+  FaIdCard,
+} from "react-icons/fa";
+
 import SectionCard from "../SectionCard";
 
-function PersonalCard({ application }) {
+function PersonalCard({ application, documents }) {
+
+  const maskAadhaar = (aadhaar) => {
+
+    if (!aadhaar) return "-";
+
+    return `XXXX XXXX ${aadhaar.slice(-4)}`;
+
+  };
+
+  const formatDate = (date) => {
+
+    if (!date) return "-";
+
+    return new Date(date).toLocaleDateString(
+      "en-IN",
+      {
+        day: "2-digit",
+        month: "long",
+        year: "numeric",
+      }
+    );
+
+  };
+
   return (
+
     <SectionCard title="Personal Information">
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
 
-        {/* Student Photo */}
+      <div className="grid md:grid-cols-2 gap-x-12 gap-y-8">
 
-        <div className="flex justify-center">
-          <div className="w-48 h-56 border rounded-xl overflow-hidden bg-gray-100 flex items-center justify-center">
+        <InfoItem
+          icon={<FaUser className="text-blue-600" />}
+          label="Student Name"
+          value={application.student_name}
+        />
 
-            {application.photo_url ? (
-              <img
-                src={`http://localhost:5000/${application.photo_url}`}
-                alt="Student"
-                className="w-full h-full object-cover"
-              />
-            ) : (
-              <div className="text-gray-400 text-center text-sm px-3">
-                No Photo Available
-              </div>
-            )}
+        <InfoItem
+          icon={<FaUserFriends className="text-green-600" />}
+          label="Father Name"
+          value={application.father_name}
+        />
 
-          </div>
-        </div>
+        <InfoItem
+          icon={<FaUserFriends className="text-pink-600" />}
+          label="Mother Name"
+          value={application.mother_name}
+        />
 
-        {/* Personal Information */}
+        <InfoItem
+          icon={<FaBirthdayCake className="text-orange-600" />}
+          label="Date of Birth"
+          value={formatDate(application.dob)}
+        />
 
-        <div className="lg:col-span-3">
+        <InfoItem
+          icon={<FaVenusMars className="text-purple-600" />}
+          label="Gender"
+          value={application.gender}
+        />
 
-          <div className="grid md:grid-cols-2 gap-x-10 gap-y-5">
+        <InfoItem
+          icon={<FaPhoneAlt className="text-emerald-600" />}
+          label="Mobile Number"
+          value={application.mobile}
+        />
 
-            <InfoItem
-              label="Application ID"
-              value={application.application_id}
-            />
+        <InfoItem
+          icon={<FaEnvelope className="text-red-600" />}
+          label="Email Address"
+          value={application.email}
+        />
 
-            <InfoItem
-              label="Student Name"
-              value={application.student_name}
-            />
-
-            <InfoItem
-              label="Father Name"
-              value={application.father_name}
-            />
-
-            <InfoItem
-              label="Mother Name"
-              value={application.mother_name}
-            />
-
-            <InfoItem
-              label="Date of Birth"
-              value={application.dob}
-            />
-
-            <InfoItem
-              label="Gender"
-              value={application.gender}
-            />
-
-            <InfoItem
-              label="Mobile Number"
-              value={application.mobile}
-            />
-
-            <InfoItem
-              label="Email Address"
-              value={application.email}
-            />
-
-            <InfoItem
-              label="Aadhaar Number"
-              value={application.aadhaar}
-            />
-
-            <InfoItem
-              label="Current Status"
-              value={application.status}
-            />
-
-          </div>
-
-        </div>
+        <InfoItem
+          icon={<FaIdCard className="text-indigo-600" />}
+          label="Aadhaar Number"
+          value={maskAadhaar(application.aadhaar)}
+        />
 
       </div>
+
     </SectionCard>
+
   );
+
 }
 
 function InfoItem({
+
+  icon,
+
   label,
+
   value,
+
 }) {
+
   return (
-    <div>
 
-      <p className="text-sm text-gray-500">
-        {label}
-      </p>
+    <div className="flex items-start gap-4">
 
-      <p className="font-semibold text-gray-900 mt-1">
-        {value || "-"}
-      </p>
+      <div className="mt-1 text-xl">
+
+        {icon}
+
+      </div>
+
+      <div>
+
+        <p className="text-sm text-gray-500">
+
+          {label}
+
+        </p>
+
+        <p className="mt-1 font-semibold text-gray-900">
+
+          {value || "-"}
+
+        </p>
+
+      </div>
 
     </div>
+
   );
+
 }
 
 export default PersonalCard;

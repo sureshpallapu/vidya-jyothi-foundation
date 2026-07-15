@@ -11,8 +11,11 @@ import {
 
 import { Link } from "react-router-dom";
 import { foundation } from "../data/foundation";
+import { useSettings } from "../context/SettingsContext";
+
 
 function Footer() {
+  const { settings, loading } = useSettings();
   return (
     <footer className="bg-slate-950 text-white">
 
@@ -25,7 +28,12 @@ function Footer() {
           <div>
 
             <h2 className="text-3xl font-bold text-white">
-              {foundation.name}
+              {
+  loading
+    ? foundation.name
+    : settings?.trust_name ||
+      foundation.name
+}
             </h2>
 
             <p className="mt-6 text-slate-400 leading-8">
@@ -127,22 +135,32 @@ function Footer() {
             <div className="mt-6 space-y-5">
 
               <a
-                href={`mailto:${foundation.email}`}
+                href={`mailto:${
+settings?.trust_email ||
+foundation.email
+}`}
                 className="flex items-start gap-3 text-slate-400 hover:text-yellow-400 transition"
               >
                 <FaEnvelope className="mt-1" />
 
-                <span>{foundation.email}</span>
+<span>
 
+{
+settings?.trust_email ||
+foundation.email
+}
+
+</span>
               </a>
 
               <a
-                href={`tel:${foundation.phone}`}
+                href={`tel:${settings?.trust_phone || foundation.phone}`}
                 className="flex items-start gap-3 text-slate-400 hover:text-yellow-400 transition"
               >
                 <FaPhoneAlt className="mt-1" />
 
-                <span>{foundation.phone}</span>
+                <span>{settings?.trust_phone ||
+foundation.phone}</span>
 
               </a>
 
@@ -270,7 +288,14 @@ function Footer() {
           <div className="flex flex-col lg:flex-row justify-between items-center gap-6">
 
             <p className="text-slate-500 text-center lg:text-left">
-              © 2026 {foundation.name}. All Rights Reserved.
+              © 2026 {
+
+loading
+  ? foundation.name
+  : settings?.trust_name ||
+    foundation.name
+
+}. All Rights Reserved.
             </p>
 
             <div className="flex gap-6 text-sm">

@@ -45,6 +45,46 @@ const uploadDocuments = async (req, res) => {
   }
 };
 
+const downloadDocument = async (req, res) => {
+
+  try {
+
+    const { applicationId, fileName } = req.params;
+
+    const filePath = path.join(
+      __dirname,
+      "..",
+      "uploads",
+      "scholarship",
+      applicationId,
+      fileName
+    );
+
+    if (!fs.existsSync(filePath)) {
+
+      return res.status(404).json({
+        success: false,
+        message: "Document not found.",
+      });
+
+    }
+
+    return res.download(filePath);
+
+  } catch (error) {
+
+    console.error(error);
+
+    res.status(500).json({
+      success: false,
+      message: "Failed to download document.",
+    });
+
+  }
+
+};
+
 module.exports = {
   uploadDocuments,
+  downloadDocument,
 };

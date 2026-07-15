@@ -1,6 +1,7 @@
 
 const {
   uploadDocuments,
+  downloadDocument,
 } = require("../controllers/documentController");
 const upload = require("../middleware/fileUpload");
 const express = require("express");
@@ -43,6 +44,10 @@ router.post(
     },
   ]),
   uploadDocuments
+);
+router.get(
+  "/documents/download/:applicationId/:fileName",
+  downloadDocument
 );
 
 module.exports = router;

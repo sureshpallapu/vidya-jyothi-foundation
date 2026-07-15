@@ -7,7 +7,11 @@ import {
   FaClock,
 } from "react-icons/fa";
 import PageTitle from "../components/PageTitle";
+import { useSettings } from "../context/SettingsContext";
+
 function Contact() {
+
+  const { settings } = useSettings();
   const [formData, setFormData] = useState({
     fullName: "",
     mobile: "",
@@ -126,11 +130,9 @@ function Contact() {
                     </h3>
 
                     <a
-                      href="mailto:info@vidyajyothi.org"
-                      className="text-blue-700 hover:underline"
+href={`mailto:${settings?.trust_email || "info@vidyajyothi.org"}`}                      className="text-blue-700 hover:underline"
                     >
-                      info@vidyajyothi.org
-                    </a>
+{settings?.trust_email || "info@vidyajyothi.org"}                    </a>
 
                   </div>
 
@@ -151,10 +153,9 @@ function Contact() {
                     </h3>
 
                     <a
-                      href="tel:+919999999999"
-                      className="text-blue-700 hover:underline"
+href={`tel:${settings?.trust_phone || "+919999999999"}`}                      className="text-blue-700 hover:underline"
                     >
-                      +91 XXXXX XXXXX
+                      {settings?.trust_phone || "+919999999999"}
                     </a>
 
                   </div>
@@ -202,11 +203,11 @@ function Contact() {
                       Office Address
                     </h3>
 
-                    <p className="text-slate-600">
-                      Guntur,
-                      Andhra Pradesh,
-                      India
-                    </p>
+                   <p className="text-slate-600">
+
+  {settings?.trust_address || "Guntur, Andhra Pradesh, India"}
+
+</p>
 
                   </div>
 
@@ -427,8 +428,7 @@ function Contact() {
             <div className="mt-10 flex flex-wrap justify-center gap-5">
 
               <a
-                href="tel:+919999999999"
-                className="
+href={`tel:${settings?.trust_phone || "+919999999999"}`}                className="
                   bg-yellow-500
                   hover:bg-yellow-400
                   text-slate-900
@@ -461,7 +461,7 @@ function Contact() {
               </a>
 
               <a
-                href="mailto:info@vidyajyothi.org"
+                href={`mailto:${settings?.trust_email || "info@vidyajyothi.org"}`}
                 className="
                   bg-blue-600
                   hover:bg-blue-700

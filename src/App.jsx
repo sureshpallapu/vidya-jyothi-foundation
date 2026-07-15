@@ -39,8 +39,8 @@ import Applications from "./pages/admin/applications/Applications";
 import ApplicationDetails from "./pages/admin/applications/ApplicationDetails";
 import ScholarshipCycles from "./pages/admin/scholarshipCycles/ScholarshipCycles";
 import Admins from "./pages/admin/admins/Admins";
-
-
+import Reports from "./pages/admin/Reports";
+import Settings from "./pages/admin/settings/Settings";
 import RoleProtectedRoute
 from "./components/admin/RoleProtectedRoute";
 function App() {
@@ -204,11 +204,20 @@ function App() {
           />
 
           <Route
+  path="reports"
+  element={<Reports />}
+/>
+          <Route
+    path="settings"
+    element={<Settings />}
+         />
+          <Route
   path="admins"
   element={
     <RoleProtectedRoute
       allowedRoles={["SUPER_ADMIN"]}
     >
+      
       <Admins />
     </RoleProtectedRoute>
   }

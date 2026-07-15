@@ -1,96 +1,155 @@
+import {
+  FaUserShield,
+  FaCalendarAlt,
+  FaCommentDots,
+  FaMoneyBillWave,
+  FaCheckCircle,
+} from "react-icons/fa";
+
 import SectionCard from "../SectionCard";
 
 function HistoryCard({ history = [] }) {
 
+  if (history.length === 0) {
+
+    return (
+
+      <SectionCard title="Workflow Activity">
+
+        <div className="py-10 text-center text-gray-500">
+
+          No workflow history available.
+
+        </div>
+
+      </SectionCard>
+
+    );
+
+  }
+
   return (
 
-    <SectionCard title="Workflow History">
+    <SectionCard title="Workflow Activity">
 
-      {
-        history.length === 0 ? (
+      <div className="space-y-6">
 
-          <div className="text-center text-gray-500 py-8">
+        {history.map((item, index) => (
 
-            No workflow history available.
+          <div
+            key={item.id}
+            className="relative rounded-xl border bg-white shadow-sm p-6"
+          >
 
-          </div>
+            {/* Timeline Line */}
 
-        ) : (
+            {index !== history.length - 1 && (
 
-          <div className="space-y-6">
+              <div className="absolute left-8 top-20 w-1 h-full bg-blue-100"></div>
 
-            {history.map((item) => (
+            )}
 
-              <div
-                key={item.id}
-                className="border-l-4 border-blue-500 pl-5 pb-6 relative"
-              >
+            <div className="flex gap-5">
 
-                <div className="absolute -left-2 top-1 w-4 h-4 rounded-full bg-blue-500"></div>
+              {/* Status Icon */}
 
-                <div className="flex justify-between items-start">
+              <div className="flex-shrink-0">
+
+                <div className="w-14 h-14 rounded-full bg-blue-600 flex items-center justify-center text-white text-xl">
+
+                  <FaCheckCircle />
+
+                </div>
+
+              </div>
+
+              {/* Details */}
+
+              <div className="flex-1">
+
+                <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
 
                   <div>
 
-                    <h3 className="font-semibold text-lg">
+                    <h3 className="text-xl font-bold text-gray-800">
 
                       {item.current_status}
 
                     </h3>
 
-                    <p className="text-sm text-gray-500">
+                    <div className="flex items-center gap-2 mt-2 text-gray-500 text-sm">
 
-                      {new Date(item.changed_at).toLocaleString()}
+                      <FaCalendarAlt />
 
-                    </p>
+                      {new Date(
+                        item.changed_at
+                      ).toLocaleString("en-IN")}
+
+                    </div>
 
                   </div>
 
                 </div>
 
-                <div className="mt-3">
+                <div className="grid md:grid-cols-2 gap-6 mt-6">
 
-                  <p>
+                  <div>
 
-                    <strong>Changed By :</strong>
+                    <div className="flex items-center gap-2 text-gray-500">
 
-                    {" "}
+                      <FaUserShield />
 
-                    {item.admin_name}
-
-                  </p>
-
-                </div>
-
-                {
-                  item.sanctioned_amount && (
-
-                    <div className="mt-2">
-
-                      <strong>
-
-                        Sanctioned Amount :
-
-                      </strong>
-
-                      {" "}
-
-                      ₹ {item.sanctioned_amount}
+                      Changed By
 
                     </div>
 
-                  )
-                }
+                    <p className="mt-2 font-semibold">
 
-                <div className="mt-3">
+                      {item.admin_name}
 
-                  <strong>
+                    </p>
+
+                  </div>
+
+                  {item.sanctioned_amount && (
+
+                    <div>
+
+                      <div className="flex items-center gap-2 text-gray-500">
+
+                        <FaMoneyBillWave />
+
+                        Sanctioned Amount
+
+                      </div>
+
+                      <p className="mt-2 font-semibold text-green-700">
+
+                        ₹{" "}
+
+                        {Number(
+                          item.sanctioned_amount
+                        ).toLocaleString("en-IN")}
+
+                      </p>
+
+                    </div>
+
+                  )}
+
+                </div>
+
+                <div className="mt-6">
+
+                  <div className="flex items-center gap-2 text-gray-500">
+
+                    <FaCommentDots />
 
                     Remarks
 
-                  </strong>
+                  </div>
 
-                  <div className="mt-1 bg-gray-50 rounded-lg p-3">
+                  <div className="mt-3 rounded-xl bg-gray-50 border p-4 leading-7">
 
                     {item.remarks || "-"}
 
@@ -100,13 +159,13 @@ function HistoryCard({ history = [] }) {
 
               </div>
 
-            ))}
+            </div>
 
           </div>
 
-        )
+        ))}
 
-      }
+      </div>
 
     </SectionCard>
 

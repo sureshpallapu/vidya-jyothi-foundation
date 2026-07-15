@@ -6,8 +6,10 @@ import {
   FaCheckCircle,
   FaMoneyCheckAlt,
   FaTimesCircle,
+  FaUsers,
+  FaRupeeSign,
 } from "react-icons/fa";
-import { FaCalendarAlt } from "react-icons/fa";
+
 import StatCard from "./StatCard";
 
 function DashboardCards({ stats }) {
@@ -34,7 +36,7 @@ function DashboardCards({ stats }) {
 
       <StatCard
         title="Verified"
-        value={stats.documentsVerified}
+value={stats.verified}
         color="#3B82F6"
         icon={<FaSearch />}
         link="/admin/applications?status=Documents Verified"
@@ -58,7 +60,7 @@ function DashboardCards({ stats }) {
 
       <StatCard
         title="Released"
-        value={stats.scholarshipReleased}
+value={stats.released}
         color="#059669"
         icon={<FaMoneyCheckAlt />}
         link="/admin/applications?status=Scholarship Released"
@@ -72,14 +74,36 @@ function DashboardCards({ stats }) {
         link="/admin/applications?status=Rejected"
       />
 
-
+      
 <StatCard
-  title="Scholarship Cycles"
-  value={stats.activeCycles}
+  title="Total Admins"
+  value={stats.totalAdmins}
   color="#0F766E"
-  icon={<FaCalendarAlt />}
-  link="/admin/cycles"
+  icon={<FaUsers />}
+  link="/admin/admins"
 />
+<StatCard
+  title="Sanctioned Amount"
+  value={`₹${Number(
+    stats.sanctionedAmount || 0
+  ).toLocaleString("en-IN")}`}
+  color="#7C3AED"
+  icon={<FaRupeeSign />}
+  link="/admin/applications?status=Approved"
+/>
+<StatCard
+  title="Released Amount"
+  value={`₹${Number(
+    stats.releasedAmount || 0
+  ).toLocaleString("en-IN")}`}
+  color="#059669"
+  icon={<FaMoneyCheckAlt />}
+  link="/admin/applications?status=Scholarship Released"
+/>
+      
+
+
+
 
 
 

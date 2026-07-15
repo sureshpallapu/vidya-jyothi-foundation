@@ -19,6 +19,13 @@ require("./routes/scholarshipCycleRoutes");
 
 const adminManagementRoutes =
 require("./routes/adminManagementRoutes");
+
+const settingsRoutes = require("./routes/settingsRoutes");
+const dashboardRoutes =
+  require("./routes/dashboardRoutes");
+
+  const reportRoutes =
+  require("./routes/reportRoutes");
 /*
 |--------------------------------------------------------------------------
 | Middleware
@@ -44,7 +51,7 @@ app.use("/api/admin", applicationRoutes);
 app.use("/api/admin", applicationDetailsRoutes);
 app.use("/api/admin", applicationWorkflowRoutes);
 app.use("/api/scholarship", scholarshipRoutes);
-
+app.use("/api/settings", settingsRoutes);
 app.use(
   "/api/admin",
   applicationHistoryRoutes
@@ -56,6 +63,14 @@ app.use(
 app.use(
   "/api/admin",
   scholarshipCycleRoutes
+);
+app.use(
+  "/api/dashboard",
+  dashboardRoutes
+);
+app.use(
+  "/api/reports",
+  reportRoutes
 );
 
 /*

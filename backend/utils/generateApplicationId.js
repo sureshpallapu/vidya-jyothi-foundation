@@ -1,8 +1,6 @@
 const db = require("../config/db");
 
-const {
-  APPLICATION_PREFIX,
-} = require("../config/constants");
+
 
 const generateApplicationId = async () => {
 
@@ -33,6 +31,21 @@ const generateApplicationId = async () => {
   }
 
   const cycle = cycleResult[0];
+
+  /*
+|--------------------------------------------------------------------------
+| Get Application Prefix
+|--------------------------------------------------------------------------
+*/
+
+const [settingsResult] = await db.query(`
+  SELECT application_prefix
+  FROM settings
+  WHERE id = 1
+`);
+
+const APPLICATION_PREFIX =
+  settingsResult[0]?.application_prefix || "VJF";
 
   /*
   |--------------------------------------------------------------------------

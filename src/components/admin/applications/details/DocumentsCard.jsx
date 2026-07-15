@@ -1,6 +1,6 @@
 import SectionCard from "../SectionCard";
 import DocumentItem from "./DocumentItem";
-
+import DocumentChecklist from "./DocumentChecklist";
 function DocumentsCard({ documents }) {
   return (
 
@@ -30,7 +30,12 @@ function DocumentsCard({ documents }) {
 
       </div>
 
-    </SectionCard>
+      
+<DocumentChecklist
+  documents={documents}
+/>
+
+</SectionCard>
 
   );
 }

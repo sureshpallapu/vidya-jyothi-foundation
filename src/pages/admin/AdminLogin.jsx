@@ -3,9 +3,9 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 import { login } from "../../utils/adminAuth";
-
+import { useSettings } from "../../context/SettingsContext";
 function AdminLogin() {
-
+const { settings, loading } = useSettings();
   const [username, setUsername] = useState("");
 
   const [password, setPassword] = useState("");
@@ -46,8 +46,13 @@ function AdminLogin() {
         |--------------------------------------------------------------------------
         */
 
-        login(response.data.admin);
+login(
 
+  response.data.admin,
+
+  settings?.session_timeout || 5
+
+);
         /*
         |--------------------------------------------------------------------------
         | Redirect Dashboard
@@ -98,11 +103,16 @@ function AdminLogin() {
 
         </h1>
 
-        <p className="text-center text-gray-500 mt-2 mb-8">
+       <p className="text-center text-gray-500 mt-2 mb-8">
 
-          Vidya Jyothi Foundation
+  {
+    loading
+      ? "Loading..."
+      : settings?.trust_name ||
+        "Vidya Jyothi Foundation"
+  }
 
-        </p>
+</p>
 
         <form onSubmit={handleLogin}>
 

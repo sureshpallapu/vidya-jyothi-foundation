@@ -1,6 +1,7 @@
-import { foundation } from "../data/foundation";
+import { useSettings } from "../context/SettingsContext";
 
 function Logo() {
+  const { settings, loading } = useSettings();
   return (
     <div className="flex items-center gap-4">
       {/* Logo Symbol */}
@@ -49,9 +50,18 @@ function Logo() {
       {/* Text */}
 
       <div>
-<h1 className="font-bold text-lg text-slate-900">
-  {foundation.name}
+        
+  <h1 className="font-bold text-lg text-slate-900">
+
+  {
+    loading
+      ? "Loading..."
+      : settings?.trust_name ||
+        "Vidya Jyothi Foundation"
+  }
+
 </h1>
+
 
         <p
           className="

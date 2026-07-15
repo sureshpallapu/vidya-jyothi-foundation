@@ -1,11 +1,35 @@
+import {
+  FaFileAlt,
+  FaSearch,
+  FaUserCheck,
+  FaCheckCircle,
+  FaMoneyCheckAlt,
+  FaTimesCircle,
+} from "react-icons/fa";
+
 import SectionCard from "../SectionCard";
 
 const WORKFLOW = [
-  "Submitted",
-  "Documents Verified",
-  "Under Review",
-  "Approved",
-  "Scholarship Released",
+  {
+    status: "Submitted",
+    icon: <FaFileAlt />,
+  },
+  {
+    status: "Documents Verified",
+    icon: <FaSearch />,
+  },
+  {
+    status: "Under Review",
+    icon: <FaUserCheck />,
+  },
+  {
+    status: "Approved",
+    icon: <FaCheckCircle />,
+  },
+  {
+    status: "Scholarship Released",
+    icon: <FaMoneyCheckAlt />,
+  },
 ];
 
 function TimelineCard({
@@ -21,86 +45,205 @@ function TimelineCard({
     completedStatuses.unshift("Submitted");
   }
 
+  const rejected =
+    currentStatus === "Rejected";
+
   return (
 
-    <SectionCard title="Application Timeline">
+    <SectionCard title="Application Workflow">
 
-      <div className="space-y-5">
+      {rejected ? (
 
-        {WORKFLOW.map((status, index) => {
+        <div className="rounded-xl border border-red-200 bg-red-50 p-6">
 
-          const completed =
-            completedStatuses.includes(status);
+          <div className="flex items-center gap-3">
 
-          const active =
-            currentStatus === status;
+            <FaTimesCircle className="text-red-600 text-3xl" />
 
-          return (
+            <div>
 
-            <div
-              key={status}
-              className="flex items-start gap-4"
-            >
+              <h3 className="text-xl font-bold text-red-700">
 
-              <div className="flex flex-col items-center">
+                Application Rejected
 
-                <div
-                  className={`w-5 h-5 rounded-full border-2
-                  ${
-                    completed
-                      ? "bg-green-500 border-green-500"
-                      : "bg-white border-gray-400"
-                  }`}
-                />
+              </h3>
 
-                {index !==
-                  WORKFLOW.length - 1 && (
-                  <div
-                    className={`w-1 h-12
-                    ${
-                      completed
-                        ? "bg-green-500"
-                        : "bg-gray-300"
-                    }`}
-                  />
-                )}
+              <p className="text-red-600 mt-1">
 
-              </div>
+                This application has exited the workflow.
 
-              <div>
-
-                <h3
-                  className={`font-semibold
-                  ${
-                    active
-                      ? "text-blue-700"
-                      : "text-gray-800"
-                  }`}
-                >
-
-                  {status}
-
-                </h3>
-
-                {active && (
-
-                  <p className="text-sm text-blue-500">
-
-                    Current Stage
-
-                  </p>
-
-                )}
-
-              </div>
+              </p>
 
             </div>
 
-          );
+          </div>
 
-        })}
+        </div>
 
-      </div>
+      ) : (
+
+        <div>
+
+          {/* Timeline */}
+
+          <div className="overflow-x-auto">
+
+            <div className="flex items-center min-w-[850px]">
+
+              {WORKFLOW.map((step, index) => {
+
+                const completed =
+                  completedStatuses.includes(
+                    step.status
+                  );
+
+                const active =
+                  currentStatus ===
+                  step.status;
+
+                return (
+
+                  <div
+                    key={step.status}
+                    className="flex items-center flex-1"
+                  >
+
+                    {/* Circle */}
+
+                    <div className="flex flex-col items-center">
+
+                      <div
+                        className={`
+                          w-14
+                          h-14
+                          rounded-full
+                          flex
+                          items-center
+                          justify-center
+                          text-white
+                          text-xl
+                          shadow-md
+                          ${
+                            completed
+                              ? "bg-green-600"
+                              : active
+                              ? "bg-yellow-500 animate-pulse"
+                              : "bg-gray-300"
+                          }
+                        `}
+                      >
+
+                        {step.icon}
+
+                      </div>
+
+                      <p
+                        className={`
+                          mt-3
+                          text-sm
+                          font-semibold
+                          text-center
+                          w-28
+                          ${
+                            active
+                              ? "text-yellow-700"
+                              : completed
+                              ? "text-green-700"
+                              : "text-gray-500"
+                          }
+                        `}
+                      >
+
+                        {step.status}
+
+                      </p>
+
+                      {active && (
+
+                        <span className="mt-2 text-xs bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full">
+
+                          Current Stage
+
+                        </span>
+
+                      )}
+
+                    </div>
+
+                    {/* Connector */}
+
+                    {index !==
+                      WORKFLOW.length - 1 && (
+
+                      <div
+                        className={`
+                          flex-1
+                          h-1
+                          mx-2
+                          rounded
+                          ${
+                            completed
+                              ? "bg-green-500"
+                              : "bg-gray-300"
+                          }
+                        `}
+                      />
+
+                    )}
+
+                  </div>
+
+                );
+
+              })}
+
+            </div>
+
+          </div>
+
+          {/* Summary */}
+
+          <div className="mt-10 grid md:grid-cols-2 gap-6">
+
+            <div className="rounded-xl bg-blue-50 border border-blue-200 p-5">
+
+              <p className="text-sm text-blue-600">
+
+                Current Status
+
+              </p>
+
+              <h3 className="mt-2 text-2xl font-bold text-blue-800">
+
+                {currentStatus}
+
+              </h3>
+
+            </div>
+
+            <div className="rounded-xl bg-green-50 border border-green-200 p-5">
+
+              <p className="text-sm text-green-600">
+
+                Workflow Progress
+
+              </p>
+
+              <h3 className="mt-2 text-2xl font-bold text-green-800">
+
+                {
+                  completedStatuses.length
+                } / {WORKFLOW.length} Completed
+
+              </h3>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      )}
 
     </SectionCard>
 
