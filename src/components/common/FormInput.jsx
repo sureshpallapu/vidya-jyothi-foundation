@@ -4,10 +4,13 @@ function FormInput({
   type = "text",
   value,
   onChange,
+  onBlur,
   placeholder,
   required = false,
   error,
   maxLength,
+  readOnly = false,
+  disabled = false,
 }) {
   return (
     <div>
@@ -24,13 +27,21 @@ function FormInput({
         name={name}
         value={value}
         onChange={onChange}
+        onBlur={onBlur}
         placeholder={placeholder}
         maxLength={maxLength}
+        readOnly={readOnly}
+        disabled={disabled}
         className={`w-full rounded-lg px-4 py-3 border transition outline-none
         ${
           error
             ? "border-red-500"
             : "border-gray-300 focus:ring-2 focus:ring-yellow-500"
+        }
+        ${
+          readOnly || disabled
+            ? "bg-gray-100 cursor-not-allowed"
+            : ""
         }`}
       />
 

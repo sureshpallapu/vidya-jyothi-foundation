@@ -2,9 +2,76 @@ export const validatePersonalDetails = (formData) => {
   const errors = {};
 
   // Student Name
-  if (!formData.studentName.trim()) {
-    errors.studentName = "Student Name is required.";
+ if (!formData.studentName.trim()) {
+
+  errors.studentName =
+    "Student Name is required.";
+
+}
+
+else if (
+
+  !/^[A-Za-z\s.]+$/.test(
+    formData.studentName
+  )
+
+) {
+
+  errors.studentName =
+    "Only alphabets and spaces are allowed.";
+
+}
+
+else if (
+
+  formData.studentName.trim().length < 3
+
+) {
+
+  errors.studentName =
+    "Student Name must be at least 3 characters.";
+
+}
+
+else if (
+
+  formData.studentName.trim().length > 100
+
+) {
+
+  errors.studentName =
+    "Student Name is too long.";
+
+}
+
+if (!formData.dob) {
+
+  errors.dob =
+    "Date of Birth is required.";
+
+}
+
+else {
+
+  const dob = new Date(formData.dob);
+
+  const today = new Date();
+
+  if (dob > today) {
+
+    errors.dob =
+      "Invalid Date of Birth.";
+
   }
+
+}
+
+if (!formData.gender) {
+
+  errors.gender =
+    "Please select Gender.";
+
+}
 
   // Mobile
   if (!formData.mobile.trim()) {
@@ -19,6 +86,19 @@ export const validatePersonalDetails = (formData) => {
   } else if (!/^\d{12}$/.test(formData.aadhaar)) {
     errors.aadhaar = "Aadhaar Number must be 12 digits.";
   }
+
+  if (
+
+  /^(\d)\1{11}$/.test(
+    formData.aadhaar
+  )
+
+) {
+
+  errors.aadhaar =
+    "Invalid Aadhaar Number.";
+
+}
 
   // Email (optional)
   if (

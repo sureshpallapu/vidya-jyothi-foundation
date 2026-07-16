@@ -5,27 +5,33 @@ require("dotenv").config();
 
 const db = require("./config/db");
 
+/*
+|--------------------------------------------------------------------------
+| Route Imports
+|--------------------------------------------------------------------------
+*/
+
 const adminRoutes = require("./routes/adminRoutes");
+const adminManagementRoutes = require("./routes/adminManagementRoutes");
 const scholarshipRoutes = require("./routes/scholarshipRoutes");
+const scholarshipCycleRoutes = require("./routes/scholarshipCycleRoutes");
 const applicationRoutes = require("./routes/applicationRoutes");
 const applicationDetailsRoutes = require("./routes/applicationDetailsRoutes");
 const applicationWorkflowRoutes = require("./routes/applicationWorkflowRoutes");
-const app = express();
-const applicationHistoryRoutes =
-require("./routes/applicationHistoryRoutes");
-
-const scholarshipCycleRoutes =
-require("./routes/scholarshipCycleRoutes");
-
-const adminManagementRoutes =
-require("./routes/adminManagementRoutes");
-
+const applicationHistoryRoutes = require("./routes/applicationHistoryRoutes");
+const dashboardRoutes = require("./routes/dashboardRoutes");
+const reportRoutes = require("./routes/reportRoutes");
 const settingsRoutes = require("./routes/settingsRoutes");
-const dashboardRoutes =
-  require("./routes/dashboardRoutes");
+const pincodeRoutes = require("./routes/pincodeRoutes");
+const emailVerificationRoutes = require("./routes/emailVerificationRoutes");
 
-  const reportRoutes =
-  require("./routes/reportRoutes");
+
+const ifscRoutes =
+  require("./routes/ifscRoutes");
+
+
+const app = express();
+
 /*
 |--------------------------------------------------------------------------
 | Middleware
@@ -34,11 +40,7 @@ const dashboardRoutes =
 
 app.use(cors());
 app.use(express.json());
-
-app.use(
-  "/uploads",
-  express.static(path.join(__dirname, "uploads"))
-);
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 /*
 |--------------------------------------------------------------------------
@@ -46,33 +48,32 @@ app.use(
 |--------------------------------------------------------------------------
 */
 
+// Admin & Applications
 app.use("/api/admin", adminRoutes);
+app.use("/api/admin", adminManagementRoutes);
 app.use("/api/admin", applicationRoutes);
 app.use("/api/admin", applicationDetailsRoutes);
 app.use("/api/admin", applicationWorkflowRoutes);
-app.use("/api/scholarship", scholarshipRoutes);
-app.use("/api/settings", settingsRoutes);
-app.use(
-  "/api/admin",
-  applicationHistoryRoutes
-);
-app.use(
-  "/api/admin",
-  adminManagementRoutes
-);
-app.use(
-  "/api/admin",
-  scholarshipCycleRoutes
-);
-app.use(
-  "/api/dashboard",
-  dashboardRoutes
-);
-app.use(
-  "/api/reports",
-  reportRoutes
-);
+app.use("/api/admin", applicationHistoryRoutes);
+app.use("/api/admin", scholarshipCycleRoutes);
 
+// Public Scholarship Application
+app.use("/api/scholarship", scholarshipRoutes);
+
+// Dashboard & Reports
+app.use("/api/dashboard", dashboardRoutes);
+app.use("/api/reports", reportRoutes);
+
+// Settings, Pincode Lookup & Email Verification
+app.use("/api/settings", settingsRoutes);
+app.use("/api/pincode", pincodeRoutes);
+app.use("/api/email", emailVerificationRoutes);
+
+
+app.use(
+  "/api/ifsc",
+  ifscRoutes
+);
 /*
 |--------------------------------------------------------------------------
 | Test Routes

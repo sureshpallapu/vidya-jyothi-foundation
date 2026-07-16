@@ -11,7 +11,9 @@ const router = express.Router();
 const {
   createScholarshipApplication,
   checkApplicationStatus,
+  checkAadhaarDuplicate,
 } = require("../controllers/scholarshipController");
+
 
 router.post(
   "/apply",
@@ -45,6 +47,19 @@ router.post(
   ]),
   uploadDocuments
 );
+
+/*
+|--------------------------------------------------------------------------
+| Check Aadhaar Duplicate
+|--------------------------------------------------------------------------
+*/
+
+router.get(
+  "/check-aadhaar/:aadhaar",
+  checkAadhaarDuplicate
+);
+
+
 router.get(
   "/documents/download/:applicationId/:fileName",
   downloadDocument

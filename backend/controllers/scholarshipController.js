@@ -4,6 +4,7 @@ const {
   createApplication,
   checkDuplicateApplication,
   getApplicationStatus,
+  checkAadhaarExists,
 } = require("../models/scholarshipModel");
 
 // Convert empty string to NULL
@@ -167,6 +168,101 @@ const createScholarshipApplication = async (req, res) => {
   }
 };
 
+/*
+|--------------------------------------------------------------------------
+| Check Aadhaar Duplicate
+|--------------------------------------------------------------------------
+*/
+
+const checkAadhaarDuplicate = async (req, res) => {
+
+  try {
+
+    const { aadhaar } = req.params;
+
+    /*
+    |--------------------------------------------------------------------------
+    | Validate Aadhaar
+    |--------------------------------------------------------------------------
+    */
+
+    if (!/^\d{12}$/.test(aadhaar)) {
+
+      return res.status(400).json({
+
+        success: false,
+
+        message: "Invalid Aadhaar Number.",
+
+      });
+
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Check Existing Application
+    |--------------------------------------------------------------------------
+    */
+
+    const application =
+      await checkAadhaarExists(aadhaar);
+
+    if (!application) {
+
+      return res.json({
+
+        success: true,
+
+        exists: false,
+
+      });
+
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Duplicate Found
+    |--------------------------------------------------------------------------
+    */
+
+    return res.json({
+
+      success: true,
+
+      exists: true,
+
+      applicationNumber:
+        application.application_id,
+
+      studentName:
+        application.student_name,
+
+      status:
+        application.status,
+
+      submittedOn:
+        application.created_at,
+
+    });
+
+  }
+
+  catch (error) {
+
+    console.error(error);
+
+    return res.status(500).json({
+
+      success: false,
+
+      message: "Failed to check Aadhaar.",
+
+    });
+
+  }
+
+};
+
 /**
  * Check Scholarship Application Status
  */
@@ -218,4 +314,5 @@ const checkApplicationStatus = async (req, res) => {
 module.exports = {
   createScholarshipApplication,
   checkApplicationStatus,
+  checkAadhaarDuplicate,
 };

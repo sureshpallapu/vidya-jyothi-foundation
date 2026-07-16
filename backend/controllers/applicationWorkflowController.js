@@ -8,6 +8,10 @@ const {
   getAdminById,
 } = require("../models/adminModel");
 
+const {
+  sendApplicationStatusEmail,
+} = require("../utils/emailService");
+
 /*
 |--------------------------------------------------------------------------
 | Valid Workflow Transitions
@@ -380,6 +384,59 @@ const updateWorkflow = async (req, res) => {
         admin.id,
 
     });
+    /*
+|--------------------------------------------------------------------------
+| Send Status Notification Email
+|--------------------------------------------------------------------------
+*/
+
+try {
+
+  // Reload the updated application so we get the latest
+  // status, remarks and sanctioned amount.
+
+  const updatedApplication =
+    await getApplicationById(id);
+
+  await sendApplicationStatusEmail({
+
+    email:
+      updatedApplication.email,
+
+    student_name:
+      updatedApplication.student_name,
+
+    application_id:
+      updatedApplication.application_id,
+
+    status:
+      updatedApplication.status,
+
+    remarks:
+      updatedApplication.remarks,
+
+    sanctioned_amount:
+      updatedApplication.sanctioned_amount,
+
+  });
+
+  console.log(
+    "✅ Status notification email sent."
+  );
+
+}
+
+catch (emailError) {
+
+  console.error(
+
+    "Email Notification Failed:",
+
+    emailError
+
+  );
+
+}
 
     /*
     |--------------------------------------------------------------------------

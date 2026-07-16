@@ -153,9 +153,38 @@ const getApplicationStatus = async (applicationId, aadhaar) => {
   return rows;
 };
 
+/*
+|--------------------------------------------------------------------------
+| Check Aadhaar Duplicate
+|--------------------------------------------------------------------------
+*/
+
+const checkAadhaarExists = async (aadhaar) => {
+
+  const [rows] = await db.execute(
+
+    `
+      SELECT
+        application_id,
+        student_name,
+        status,
+        created_at
+      FROM scholarship_applications
+      WHERE aadhaar = ?
+      LIMIT 1
+    `,
+    [aadhaar]
+
+  );
+
+  return rows[0] || null;
+
+};
+
 module.exports = {
   createApplication,
   checkDuplicateApplication,
   saveDocuments,
   getApplicationStatus,
+  checkAadhaarExists,
 };
