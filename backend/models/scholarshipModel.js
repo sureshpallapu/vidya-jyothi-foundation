@@ -181,10 +181,35 @@ const checkAadhaarExists = async (aadhaar) => {
 
 };
 
+const getApplicationById = async (identifier) => {
+  const [rows] = await db.query(
+    `
+      SELECT
+        id,
+        application_id,
+        student_name,
+        father_name,
+        dob,
+        gender,
+        aadhaar
+      FROM scholarship_applications
+      WHERE id = ?
+         OR application_id = ?
+      LIMIT 1
+    `,
+    [identifier, identifier]
+  );
+
+  return rows[0] || null;
+};
+
+
+
 module.exports = {
   createApplication,
   checkDuplicateApplication,
   saveDocuments,
   getApplicationStatus,
   checkAadhaarExists,
+  getApplicationById,
 };

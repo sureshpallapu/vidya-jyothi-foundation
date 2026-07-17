@@ -28,7 +28,8 @@ const emailVerificationRoutes = require("./routes/emailVerificationRoutes");
 
 const ifscRoutes =
   require("./routes/ifscRoutes");
-
+const ocrRoutes =
+  require("./routes/ocrRoutes");
 
 const app = express();
 
@@ -73,6 +74,11 @@ app.use("/api/email", emailVerificationRoutes);
 app.use(
   "/api/ifsc",
   ifscRoutes
+);
+
+app.use(
+  "/api/ocr",
+  ocrRoutes
 );
 /*
 |--------------------------------------------------------------------------

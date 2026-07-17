@@ -20,9 +20,14 @@ function ScholarshipApplication() {
 
   const navigate = useNavigate();
 
-  const [loading, setLoading] = useState(false);
-  // Current Active Step
-  const [currentStep, setCurrentStep] = useState(1);
+const [loading, setLoading] = useState(false);
+
+// Aadhaar OCR processing state
+const [aadhaarVerifying, setAadhaarVerifying] =
+  useState(false);
+
+// Current Active Step
+const [currentStep, setCurrentStep] = useState(1);
 
   // Complete Scholarship Form
   const [formData, setFormData] = useState(
@@ -300,20 +305,23 @@ const handleFinalSubmit = async () => {
       <div className="mt-6 rounded-xl bg-white shadow-lg p-8">
 
         <CurrentStepComponent
-          formData={formData}
-          setFormData={setFormData}
-          errors={errors}
-        />
+  formData={formData}
+  setFormData={setFormData}
+  errors={errors}
+  aadhaarVerifying={aadhaarVerifying}
+  setAadhaarVerifying={setAadhaarVerifying}
+/>
 
       </div>
 
-      <StepNavigation
-        currentStep={currentStep}
-        handleNext={handleNext}
-        handlePrevious={handlePrevious}
-        handleFinalSubmit={handleFinalSubmit}
-        loading={loading}
-      />
+     <StepNavigation
+  currentStep={currentStep}
+  handleNext={handleNext}
+  handlePrevious={handlePrevious}
+  handleFinalSubmit={handleFinalSubmit}
+  loading={loading}
+  aadhaarVerifying={aadhaarVerifying}
+/>
 
 
 
