@@ -21,6 +21,21 @@ const getApplicationDetails = async (id) => {
 
 };
 
+const getApplicationVerification = async (applicationId) => {
+  const sql = `
+    SELECT *
+    FROM document_verifications
+    WHERE application_id = ?
+      AND document_name = 'aadhaar'
+    ORDER BY id DESC
+    LIMIT 1
+  `;
+
+  const [rows] = await db.query(sql, [applicationId]);
+
+  return rows[0] || null;
+};
+
 /*
 |--------------------------------------------------------------------------
 | Get Uploaded Documents
@@ -50,4 +65,5 @@ const getApplicationDocuments = async (applicationId) => {
 module.exports = {
   getApplicationDetails,
   getApplicationDocuments,
+  getApplicationVerification,
 };

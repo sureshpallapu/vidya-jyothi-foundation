@@ -4,6 +4,7 @@ const fs = require("fs");
 const {
   getApplicationById,
   saveDocuments,
+  saveDocumentVerification,
 } = require("../models/scholarshipModel");
 
 const {
@@ -60,16 +61,44 @@ const uploadDocuments = async (req, res) => {
     });
 
     const verification = await verifyDocuments(
-      req.files,
-      student
-    );
+  req.files,
+  student
+);
 
-    console.log(
-      "Document verification result:",
-      verification
-    );
+console.log(
+  "Document verification result:",
+  verification
+);
 
-    await saveDocuments(documents);
+/*
+|--------------------------------------------------------------------------
+| Save Uploaded Documents
+|--------------------------------------------------------------------------
+*/
+
+await saveDocuments(documents);
+
+console.log(
+  "Documents saved successfully."
+);
+
+/*
+|--------------------------------------------------------------------------
+| Save Aadhaar OCR Verification Result
+|--------------------------------------------------------------------------
+*/
+
+if (verification?.aadhaar) {
+  await saveDocumentVerification(
+    student.id,
+    "aadhaar",
+    verification.aadhaar
+  );
+
+  console.log(
+    "Aadhaar OCR verification saved successfully."
+  );
+}
 
     console.log("Documents saved successfully.");
 

@@ -204,6 +204,108 @@ const getApplicationById = async (identifier) => {
 };
 
 
+/**
+ * Save Document OCR Verification Result
+ */
+const saveDocumentVerification = async (
+  applicationId,
+  documentName,
+  verificationResult
+) => {
+  const verification =
+    verificationResult.verification || {};
+
+  const extracted =
+    verificationResult.extracted || {};
+
+  let verificationStatus = "FAILED";
+
+  if (verificationResult.success) {
+    verificationStatus =
+      verificationResult.overallVerified
+        ? "VERIFIED"
+        : "MISMATCH";
+  }
+
+  let verificationMessage;
+
+  if (verificationStatus === "VERIFIED") {
+    verificationMessage =
+      "OCR verification successful. The Aadhaar details match the information provided in the application. Manual document verification by the officer is still required.";
+  } else if (verificationStatus === "MISMATCH") {
+    const mismatches = [];
+
+    if (verification.aadhaarMatched === false) {
+      mismatches.push("Aadhaar Number");
+    }
+
+    if (verification.nameMatched === false) {
+      mismatches.push("Student Name");
+    }
+
+    if (verification.dobMatched === false) {
+      mismatches.push("Date of Birth");
+    }
+
+    if (verification.genderMatched === false) {
+      mismatches.push("Gender");
+    }
+
+    verificationMessage =
+      mismatches.length > 0
+        ? `OCR detected mismatched information: ${mismatches.join(
+            ", "
+          )}. Manual verification by the document officer is required.`
+        : "OCR verification could not fully verify the Aadhaar document. Manual verification is required.";
+  } else {
+    verificationMessage =
+      "OCR verification failed. The uploaded document requires manual verification by the document officer.";
+  }
+
+  const sql = `
+    INSERT INTO document_verifications (
+      application_id,
+      document_name,
+      verification_status,
+      overall_verified,
+
+      aadhaar_matched,
+      name_matched,
+      dob_matched,
+      gender_matched,
+
+      extracted_aadhaar,
+      extracted_name,
+      extracted_dob,
+      extracted_gender,
+
+      verification_message
+    )
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `;
+
+  const [result] = await db.query(sql, [
+    applicationId,
+    documentName,
+    verificationStatus,
+    verificationResult.overallVerified ? 1 : 0,
+
+    verification.aadhaarMatched ?? null,
+    verification.nameMatched ?? null,
+    verification.dobMatched ?? null,
+    verification.genderMatched ?? null,
+
+    extracted.aadhaarNumber || null,
+    extracted.name || null,
+    extracted.dob || null,
+    extracted.gender || null,
+
+    verificationMessage,
+  ]);
+
+  return result;
+};
+
 
 module.exports = {
   createApplication,
@@ -212,4 +314,5 @@ module.exports = {
   getApplicationStatus,
   checkAadhaarExists,
   getApplicationById,
+  saveDocumentVerification,
 };

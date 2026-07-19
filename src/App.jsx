@@ -33,6 +33,7 @@ import CheckStatus from "./pages/scholarship/CheckStatus";
 import AdminLogin from "./pages/admin/AdminLogin";
 import AdminLayout from "./components/admin/layout/AdminLayout";
 import ProtectedRoute from "./components/admin/ProtectedRoute";
+import RoleProtectedRoute from "./components/admin/RoleProtectedRoute";
 
 import Dashboard from "./pages/admin/Dashboard";
 import Applications from "./pages/admin/applications/Applications";
@@ -41,139 +42,60 @@ import ScholarshipCycles from "./pages/admin/scholarshipCycles/ScholarshipCycles
 import Admins from "./pages/admin/admins/Admins";
 import Reports from "./pages/admin/Reports";
 import Settings from "./pages/admin/settings/Settings";
-import RoleProtectedRoute
-from "./components/admin/RoleProtectedRoute";
+import Trustees from "./pages/admin/trustees/Trustees";
+import AddTrustee from "./pages/admin/trustees/AddTrustee";
+import TrusteeDetails from "./pages/admin/trustees/TrusteeDetails";
+import EditTrustee from "./pages/admin/trustees/EditTrustee";
+
 function App() {
-
   return (
-
     <BrowserRouter basename={import.meta.env.BASE_URL}>
-
       <ScrollToTop />
 
       <Routes>
-
         {/* ===================================================== */}
         {/* Public Website */}
         {/* ===================================================== */}
-
         <Route element={<WebsiteLayout />}>
-
-          <Route
-            path="/"
-            element={<Home />}
-          />
-
-          <Route
-            path="/about"
-            element={<About />}
-          />
-
-          <Route
-            path="/founder"
-            element={<Founder />}
-          />
-
-          <Route
-            path="/scholarships"
-            element={<Scholarship />}
-          />
-
-          <Route
-            path="/transparency"
-            element={<Transparency />}
-          />
-
-          <Route
-            path="/volunteer"
-            element={<Volunteer />}
-          />
-
-          <Route
-            path="/contact"
-            element={<Contact />}
-          />
-
-          <Route
-            path="/donate"
-            element={<Donate />}
-          />
-
-          <Route
-            path="/privacy-policy"
-            element={<PrivacyPolicy />}
-          />
-
+          <Route path="/" element={<Home />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/founder" element={<Founder />} />
+          <Route path="/scholarships" element={<Scholarship />} />
+          <Route path="/transparency" element={<Transparency />} />
+          <Route path="/volunteer" element={<Volunteer />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/donate" element={<Donate />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           <Route
             path="/terms-and-conditions"
             element={<TermsConditions />}
           />
-
-          <Route
-            path="/donors"
-            element={<Donors />}
-          />
-
-          <Route
-            path="/bank-records"
-            element={<BankRecords />}
-          />
-
-          <Route
-            path="/gallery/photo-gallery"
-            element={<PhotoGallery />}
-          />
-
-          <Route
-            path="/gallery/events-visits"
-            element={<EventsVisits />}
-          />
-
-          <Route
-            path="/gallery/media-coverage"
-            element={<MediaCoverage />}
-          />
-
-          <Route
-            path="/gallery/video-gallery"
-            element={<VideoGallery />}
-          />
-
-          <Route
-            path="/apply"
-            element={<ScholarshipApplication />}
-          />
-
+          <Route path="/donors" element={<Donors />} />
+          <Route path="/bank-records" element={<BankRecords />} />
+          <Route path="/gallery/photo-gallery" element={<PhotoGallery />} />
+          <Route path="/gallery/events-visits" element={<EventsVisits />} />
+          <Route path="/gallery/media-coverage" element={<MediaCoverage />} />
+          <Route path="/gallery/video-gallery" element={<VideoGallery />} />
+          <Route path="/apply" element={<ScholarshipApplication />} />
           <Route
             path="/apply-scholarship"
             element={<ScholarshipApplication />}
           />
-
           <Route
             path="/application-success"
             element={<ApplicationSuccess />}
           />
-
-          <Route
-            path="/check-status"
-            element={<CheckStatus />}
-          />
-
+          <Route path="/check-status" element={<CheckStatus />} />
         </Route>
 
         {/* ===================================================== */}
         {/* Admin Login */}
         {/* ===================================================== */}
-
-        <Route
-          path="/admin/login"
-          element={<AdminLogin />}
-        />
+        <Route path="/admin/login" element={<AdminLogin />} />
 
         {/* ===================================================== */}
         {/* Admin Panel */}
         {/* ===================================================== */}
-
         <Route
           path="/admin"
           element={
@@ -182,64 +104,39 @@ function App() {
             </ProtectedRoute>
           }
         >
+          <Route path="dashboard" element={<Dashboard />} />
+
+          <Route path="applications" element={<Applications />} />
+          <Route path="applications/:id" element={<ApplicationDetails />} />
+
+          <Route path="cycles" element={<ScholarshipCycles />} />
+
+          {/* Trustees — all paths relative to /admin, matching siblings */}
+          <Route path="trustees" element={<Trustees />} />
+          <Route path="trustees/add" element={<AddTrustee />} />
+          <Route path="trustees/:id" element={<TrusteeDetails />} />
+          <Route path="trustees/:id/edit" element={<EditTrustee />} />
+
+          <Route path="reports" element={<Reports />} />
+          <Route path="settings" element={<Settings />} />
 
           <Route
-            path="dashboard"
-            element={<Dashboard />}
+            path="admins"
+            element={
+              <RoleProtectedRoute allowedRoles={["SUPER_ADMIN"]}>
+                <Admins />
+              </RoleProtectedRoute>
+            }
           />
-
-          <Route
-            path="applications"
-            element={<Applications />}
-          />
-
-          <Route
-            path="applications/:id"
-            element={<ApplicationDetails />}
-          />
-
-          <Route
-            path="cycles"
-            element={<ScholarshipCycles />}
-          />
-
-          <Route
-  path="reports"
-  element={<Reports />}
-/>
-          <Route
-    path="settings"
-    element={<Settings />}
-         />
-          <Route
-  path="admins"
-  element={
-    <RoleProtectedRoute
-      allowedRoles={["SUPER_ADMIN"]}
-    >
-      
-      <Admins />
-    </RoleProtectedRoute>
-  }
-/>
-
         </Route>
 
         {/* ===================================================== */}
         {/* 404 */}
         {/* ===================================================== */}
-
-        <Route
-          path="*"
-          element={<NotFound />}
-        />
-
+        <Route path="*" element={<NotFound />} />
       </Routes>
-
     </BrowserRouter>
-
   );
-
 }
 
 export default App;

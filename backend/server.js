@@ -26,6 +26,8 @@ const pincodeRoutes = require("./routes/pincodeRoutes");
 const emailVerificationRoutes = require("./routes/emailVerificationRoutes");
 
 
+const trusteeRoutes = require("./routes/trusteeRoutes");
+
 const ifscRoutes =
   require("./routes/ifscRoutes");
 const ocrRoutes =
@@ -80,6 +82,19 @@ app.use(
   "/api/ocr",
   ocrRoutes
 );
+
+app.use("/api/trustees", trusteeRoutes);
+
+app.use(
+  "/uploads/trustees",
+  express.static(
+    path.join(
+      __dirname,
+      "uploads/trustees"
+    )
+  )
+);
+
 /*
 |--------------------------------------------------------------------------
 | Test Routes

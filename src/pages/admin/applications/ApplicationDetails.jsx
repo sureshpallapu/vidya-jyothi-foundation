@@ -5,6 +5,10 @@ import { getApplicationDetails } from "../../../api/applicationDetailsApi";
 import { getHistory } from "../../../api/historyApi";
 import { updateWorkflow } from "../../../api/workflowApi";
 
+
+import toast, { Toaster } from "react-hot-toast";
+
+
 import PersonalCard from "../../../components/admin/applications/details/PersonalCard";
 import AddressCard from "../../../components/admin/applications/details/AddressCard";
 import EducationCard from "../../../components/admin/applications/details/EducationCard";
@@ -31,6 +35,10 @@ function ApplicationDetails() {
 
   const printRef = useRef(null);
 
+
+
+
+  
   useEffect(() => {
     loadApplication();
   }, [id]);
@@ -40,23 +48,59 @@ function ApplicationDetails() {
   | Load Application
   |--------------------------------------------------------------------------
   */
-  const loadApplication = async () => {
-    try {
-      setLoading(true);
+ const loadApplication = async (showVerificationPopup = true) => {
+  try {
+    setLoading(true);
 
-      const response = await getApplicationDetails(id);
-      setApplication(response.data.data.application);
-      setDocuments(response.data.data.documents);
-      console.log(response.data.data.documents);
+    const response = await getApplicationDetails(id);
 
-      const historyResponse = await getHistory(id);
-      setHistory(historyResponse.data.data);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
+    const responseData = response.data.data;
+
+    setApplication(responseData.application);
+    setDocuments(responseData.documents || {});
+
+    // Show Aadhaar OCR verification message
+if (
+  showVerificationPopup &&
+  responseData.verification?.verification_message
+) {
+  const verification = responseData.verification;
+
+  if (verification.verification_status === "VERIFIED") {
+    toast.success(verification.verification_message, {
+      id: `ocr-verification-${id}`,
+      duration: 6000,
+    });
+  } else if (verification.verification_status === "MISMATCH") {
+    toast.error(verification.verification_message, {
+      id: `ocr-verification-${id}`,
+      duration: 6000,
+    });
+  } else if (verification.verification_status === "FAILED") {
+    toast.error(verification.verification_message, {
+      id: `ocr-verification-${id}`,
+      duration: 6000,
+    });
+  } else {
+    toast(verification.verification_message, {
+      id: `ocr-verification-${id}`,
+      duration: 6000,
+    });
+  }
+}
+
+    const historyResponse = await getHistory(id);
+
+    setHistory(historyResponse.data.data || []);
+  } catch (error) {
+    console.error(
+      "Failed to load application:",
+      error.response?.data || error
+    );
+  } finally {
+    setLoading(false);
+  }
+};
 
   /*
   |--------------------------------------------------------------------------
@@ -74,24 +118,27 @@ function ApplicationDetails() {
       return;
     }
 
-    try {
-      setWorkflowLoading(true);
+      try {
+  setWorkflowLoading(true);
 
-      await updateWorkflow(id, {
-        ...data,
-        adminId: admin.id,
-      });
+  await updateWorkflow(id, {
+    ...data,
+    adminId: admin.id,
+  });
 
-      await loadApplication();
-      alert("Workflow updated successfully.");
-    } catch (error) {
-      console.error(error);
-      alert(
-        error.response?.data?.message || "Failed to update workflow."
-      );
-    } finally {
-      setWorkflowLoading(false);
-    }
+  // Reload application without showing OCR popup again
+  await loadApplication(false);
+
+  alert("Workflow updated successfully.");
+} catch (error) {
+  console.error(error);
+
+  alert(
+    error.response?.data?.message || "Failed to update workflow."
+  );
+} finally {
+  setWorkflowLoading(false);
+}
   };
 
   /*
@@ -120,6 +167,19 @@ function ApplicationDetails() {
 
   return (
     <div className="space-y-6">
+
+      <Toaster
+      position="top-right"
+      toastOptions={{
+        duration: 15000,
+        style: {
+          maxWidth: "450px",
+          padding: "16px",
+          fontSize: "14px",
+        },
+      }}
+    />
+
       {/* Header */}
     <ApplicationHero
   application={application}

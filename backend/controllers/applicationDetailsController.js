@@ -1,18 +1,15 @@
 const {
   getApplicationDetails,
   getApplicationDocuments,
+  getApplicationVerification,
 } = require("../models/applicationDetailsModel");
 
-/*
-|--------------------------------------------------------------------------
-| Get Single Scholarship Application
-|--------------------------------------------------------------------------
-*/
-
+// Get Single Scholarship Application
 const applicationDetails = async (req, res) => {
   try {
     const { id } = req.params;
 
+    // Get application
     const application = await getApplicationDetails(id);
 
     if (!application) {
@@ -22,46 +19,35 @@ const applicationDetails = async (req, res) => {
       });
     }
 
-    const uploadedDocuments =
-    await getApplicationDocuments(id);
+    // Get documents and OCR verification
+    const [uploadedDocuments, verification] = await Promise.all([
+      getApplicationDocuments(id),
+      getApplicationVerification(id),
+    ]);
 
-/*
-|--------------------------------------------------------------------------
-| Convert Array into Object
-|--------------------------------------------------------------------------
-*/
+    // Convert documents array into object
+    const documents = {};
 
-const documents = {};
+    uploadedDocuments.forEach((doc) => {
+      documents[doc.document_name] = doc;
+    });
 
-uploadedDocuments.forEach((doc) => {
-
-    documents[doc.document_name] = doc;
-
-});
-
-res.status(200).json({
-
-    success: true,
-
-    data: {
-
+    // Return application details
+    return res.status(200).json({
+      success: true,
+      data: {
         application,
-
         documents,
-
-    },
-
-});
-
+        verification,
+      },
+    });
   } catch (error) {
+    console.error("Application details error:", error);
 
-    console.error(error);
-
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: "Failed to fetch application details.",
     });
-
   }
 };
 
