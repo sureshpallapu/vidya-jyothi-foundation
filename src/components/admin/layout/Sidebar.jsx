@@ -8,6 +8,7 @@ import {
   FaFileAlt,
   FaUsers,
   FaUserTie,
+  FaFolderOpen,
   FaCalendarAlt,
   FaChartBar,
   FaCog,
@@ -79,6 +80,16 @@ function Sidebar({ collapsed }) {
         "FOUNDER",
       ],
     },
+
+    {
+  title: "Trust Documents",
+  icon: <FaFolderOpen />,
+  path: "/admin/trust-documents",
+  roles: [
+        "SUPER_ADMIN",
+        "FOUNDER",
+      ],
+},
 
     {
       title: "Scholarship Cycles",

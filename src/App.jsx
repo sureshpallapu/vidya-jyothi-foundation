@@ -47,6 +47,11 @@ import AddTrustee from "./pages/admin/trustees/AddTrustee";
 import TrusteeDetails from "./pages/admin/trustees/TrusteeDetails";
 import EditTrustee from "./pages/admin/trustees/EditTrustee";
 
+import TrustDocuments from "./pages/admin/trustDocuments/TrustDocuments";
+import AddTrustDocument from "./pages/admin/trustDocuments/AddTrustDocument";
+import ViewTrustDocument from "./pages/admin/trustDocuments/ViewTrustDocument";
+import EditTrustDocument from "./pages/admin/trustDocuments/EditTrustDocument";
+
 function App() {
   return (
     <BrowserRouter basename={import.meta.env.BASE_URL}>
@@ -104,22 +109,37 @@ function App() {
             </ProtectedRoute>
           }
         >
+          {/* Dashboard */}
           <Route path="dashboard" element={<Dashboard />} />
 
+          {/* Applications */}
           <Route path="applications" element={<Applications />} />
           <Route path="applications/:id" element={<ApplicationDetails />} />
 
+          {/* Scholarship Cycles */}
           <Route path="cycles" element={<ScholarshipCycles />} />
 
-          {/* Trustees — all paths relative to /admin, matching siblings */}
+          {/* Trustees */}
           <Route path="trustees" element={<Trustees />} />
           <Route path="trustees/add" element={<AddTrustee />} />
           <Route path="trustees/:id" element={<TrusteeDetails />} />
           <Route path="trustees/:id/edit" element={<EditTrustee />} />
 
+          {/* Trust Documents */}
+          <Route path="trust-documents" element={<TrustDocuments />} />
+          
+          <Route path="trust-documents/add" element={<AddTrustDocument />} />
+          <Route path="trust-documents/:id" element={<ViewTrustDocument />} />
+          <Route path="trust-documents/:id/edit" element={<EditTrustDocument />} />
+         
+
+          {/* Reports */}
           <Route path="reports" element={<Reports />} />
+
+          {/* Settings */}
           <Route path="settings" element={<Settings />} />
 
+          {/* Admin Management */}
           <Route
             path="admins"
             element={

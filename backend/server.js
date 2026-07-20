@@ -25,7 +25,7 @@ const settingsRoutes = require("./routes/settingsRoutes");
 const pincodeRoutes = require("./routes/pincodeRoutes");
 const emailVerificationRoutes = require("./routes/emailVerificationRoutes");
 
-
+const trustDocumentRoutes = require("./routes/trustDocumentRoutes");
 const trusteeRoutes = require("./routes/trusteeRoutes");
 
 const ifscRoutes =
@@ -93,7 +93,12 @@ app.use(
       "uploads/trustees"
     )
   )
+
+
+  
 );
+
+app.use("/api/trust-documents", trustDocumentRoutes);
 
 /*
 |--------------------------------------------------------------------------
