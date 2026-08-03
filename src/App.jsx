@@ -52,6 +52,23 @@ import AddTrustDocument from "./pages/admin/trustDocuments/AddTrustDocument";
 import ViewTrustDocument from "./pages/admin/trustDocuments/ViewTrustDocument";
 import EditTrustDocument from "./pages/admin/trustDocuments/EditTrustDocument";
 
+import AdminDonors from "./pages/admin/donors/Donors";
+import AdminAddDonor from "./pages/admin/donors/AddDonor";
+import AdminEditDonor from "./pages/admin/donors/EditDonor";
+import ViewDonor from "./pages/admin/donors/ViewDonor";
+
+import AdminDonations from "./pages/admin/donations/Donations";
+import AddDonation from "./pages/admin/donations/AddDonation";
+import ViewDonation from "./pages/admin/donations/ViewDonation";
+import EditDonation from "./pages/admin/donations/EditDonation";
+
+import ReceiptDashboard from "./pages/admin/receipts/ReceiptDashboard";
+import ReceiptDetails from "./pages/admin/receipts/ReceiptDetails";
+import ReceiptList from "./pages/admin/receipts/ReceiptList";
+// import ReceiptPrint from "./pages/admin/receipts/ReceiptPrint";
+import ReceiptVerification from "./pages/public/ReceiptVerification";
+
+
 function App() {
   return (
     <BrowserRouter basename={import.meta.env.BASE_URL}>
@@ -75,6 +92,13 @@ function App() {
             path="/terms-and-conditions"
             element={<TermsConditions />}
           />
+
+          <Route
+    path="/verify/:receiptCode"
+    element={<ReceiptVerification />}
+/>
+
+
           <Route path="/donors" element={<Donors />} />
           <Route path="/bank-records" element={<BankRecords />} />
           <Route path="/gallery/photo-gallery" element={<PhotoGallery />} />
@@ -131,7 +155,66 @@ function App() {
           <Route path="trust-documents/add" element={<AddTrustDocument />} />
           <Route path="trust-documents/:id" element={<ViewTrustDocument />} />
           <Route path="trust-documents/:id/edit" element={<EditTrustDocument />} />
-         
+
+{/* ===================================================== */}
+{/* Donors */}
+{/* ===================================================== */}
+
+<Route path="donors" element={<AdminDonors />} />
+
+<Route path="donors/add" element={<AdminAddDonor />} />
+
+<Route
+  path="donors/:donorCode"
+  element={<ViewDonor />}
+/>
+
+<Route
+  path="donors/:donorCode/edit"
+  element={<AdminEditDonor />}
+/>
+
+{/* ===================================================== */}
+{/* Donations */}
+{/* ===================================================== */}
+
+<Route
+  path="donations"
+  element={<AdminDonations />}
+/>
+
+<Route
+  path="donations/add"
+  element={<AddDonation />}
+/>
+
+<Route
+    path="donations/:donationCode"
+    element={<ViewDonation />}
+/>
+
+<Route
+    path="donations/:donationCode/edit"
+    element={<EditDonation />}
+/>
+
+
+<Route
+    path="receipts/list"
+    element={<ReceiptList />}
+/>
+
+
+<Route
+    path="receipts"
+    element={<ReceiptDashboard />}
+/>
+<Route
+    path="receipts/:receiptCode"
+    element={<ReceiptDetails />}
+/>
+
+
 
           {/* Reports */}
           <Route path="reports" element={<Reports />} />

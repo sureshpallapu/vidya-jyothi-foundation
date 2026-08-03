@@ -12,6 +12,9 @@ import {
   FaCalendarAlt,
   FaChartBar,
   FaCog,
+  FaHandHoldingHeart,
+  FaDonate,
+  FaReceipt,
   FaSignOutAlt,
   FaGraduationCap,
   FaUserCircle,
@@ -118,6 +121,45 @@ function Sidebar({ collapsed }) {
       path: "/admin/settings",
       roles: ["SUPER_ADMIN"],
     },
+  
+
+    {
+  heading: "TRUST MANAGEMENT",
+},
+
+{
+  title: "Donors",
+  icon: <FaHandHoldingHeart />,
+  path: "/admin/donors",
+  roles: [
+    "SUPER_ADMIN",
+    "FOUNDER",
+    "ACCOUNTS",
+  ],
+},
+
+{
+  title: "Donations",
+  icon: <FaDonate />,
+  path: "/admin/donations",
+  roles: [
+    "SUPER_ADMIN",
+    "FOUNDER",
+    "ACCOUNTS",
+  ],
+},
+
+{
+  title: "Receipts",
+  icon: <FaReceipt />,
+  path: "/admin/receipts",
+  roles: [
+    "SUPER_ADMIN",
+    "FOUNDER",
+    "ACCOUNTS",
+  ],
+},
+  
   ];
 
   /*

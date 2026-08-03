@@ -1,0 +1,58 @@
+/* =====================================================
+   Receipt Viewer
+===================================================== */
+
+.receipt-paper {
+    width: 210mm;
+    min-height: 297mm;
+    background: #ffffff;
+}
+
+/* =====================================================
+   Print
+===================================================== */
+
+@media print {
+
+    @page {
+        size: A4 portrait;
+        margin: 10mm;
+    }
+
+    html,
+    body {
+        margin: 0;
+        padding: 0;
+        background: white;
+    }
+
+    body * {
+        visibility: hidden;
+    }
+
+    .receipt-print-area,
+    .receipt-print-area * {
+        visibility: visible;
+    }
+
+    .receipt-print-area {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        background: white !important;
+    }
+
+    .receipt-paper {
+        width: 190mm;
+        min-height: auto;
+        margin: 0 auto;
+        border: none !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+    }
+
+    .no-print {
+        display: none !important;
+    }
+}
