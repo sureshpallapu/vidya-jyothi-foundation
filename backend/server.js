@@ -1,37 +1,11 @@
+require("dotenv").config();
+
 const express = require("express");
 const cors = require("cors");
 const path = require("path");
-require("dotenv").config();
 
-const db = require("./config/db");
-
-/*
-|--------------------------------------------------------------------------
-| Route Imports
-|--------------------------------------------------------------------------
-*/
-
-const adminRoutes = require("./routes/adminRoutes");
-const adminManagementRoutes = require("./routes/adminManagementRoutes");
-const scholarshipRoutes = require("./routes/scholarshipRoutes");
-const scholarshipCycleRoutes = require("./routes/scholarshipCycleRoutes");
-const applicationRoutes = require("./routes/applicationRoutes");
-const applicationDetailsRoutes = require("./routes/applicationDetailsRoutes");
-const applicationWorkflowRoutes = require("./routes/applicationWorkflowRoutes");
-const applicationHistoryRoutes = require("./routes/applicationHistoryRoutes");
-const dashboardRoutes = require("./routes/dashboardRoutes");
-const reportRoutes = require("./routes/reportRoutes");
-const settingsRoutes = require("./routes/settingsRoutes");
-const pincodeRoutes = require("./routes/pincodeRoutes");
-const emailVerificationRoutes = require("./routes/emailVerificationRoutes");
-
-const trustDocumentRoutes = require("./routes/trustDocumentRoutes");
-const trusteeRoutes = require("./routes/trusteeRoutes");
-
-const ifscRoutes =
-  require("./routes/ifscRoutes");
-const ocrRoutes =
-  require("./routes/ocrRoutes");
+// Initialize Database Connection
+require("./config/db");
 
 const app = express();
 
@@ -42,8 +16,73 @@ const app = express();
 */
 
 app.use(cors());
-app.use(express.json());
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
+app.use(
+    express.json({
+        limit: "10mb",
+    })
+);
+
+app.use(
+    express.urlencoded({
+        extended: true,
+        limit: "10mb",
+    })
+);
+
+app.use(
+    "/uploads",
+    express.static(path.join(__dirname, "uploads"))
+);
+
+/*
+|--------------------------------------------------------------------------
+| Route Imports
+|--------------------------------------------------------------------------
+*/
+
+// Admin
+const adminRoutes = require("./routes/adminRoutes");
+const adminManagementRoutes = require("./routes/adminManagementRoutes");
+
+// Scholarship
+const scholarshipRoutes = require("./routes/scholarshipRoutes");
+const scholarshipCycleRoutes = require("./routes/scholarshipCycleRoutes");
+
+// Applications
+const applicationRoutes = require("./routes/applicationRoutes");
+const applicationDetailsRoutes = require("./routes/applicationDetailsRoutes");
+const applicationWorkflowRoutes = require("./routes/applicationWorkflowRoutes");
+const applicationHistoryRoutes = require("./routes/applicationHistoryRoutes");
+
+// Dashboard
+const dashboardRoutes = require("./routes/dashboardRoutes");
+
+// Reports
+const reportRoutes = require("./routes/reportRoutes");
+
+// Settings
+const settingsRoutes = require("./routes/settingsRoutes");
+
+// Utilities
+const pincodeRoutes = require("./routes/pincodeRoutes");
+const emailVerificationRoutes = require("./routes/emailVerificationRoutes");
+const ifscRoutes = require("./routes/ifscRoutes");
+const ocrRoutes = require("./routes/ocrRoutes");
+
+// Trust
+const trusteeRoutes = require("./routes/trusteeRoutes");
+const trustDocumentRoutes = require("./routes/trustDocumentRoutes");
+
+// Fundraising (NEW)
+const donorRoutes = require("./routes/donorRoutes");
+const donationRoutes = require("./routes/donationRoutes");
+const receiptRoutes = require("./routes/receiptRoutes");
+
+
+
+const certificateRoutes = require("./routes/certificateRoutes");
+
 
 /*
 |--------------------------------------------------------------------------
@@ -51,54 +90,70 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 |--------------------------------------------------------------------------
 */
 
-// Admin & Applications
+// Admin
 app.use("/api/admin", adminRoutes);
 app.use("/api/admin", adminManagementRoutes);
+
+// Applications
 app.use("/api/admin", applicationRoutes);
 app.use("/api/admin", applicationDetailsRoutes);
 app.use("/api/admin", applicationWorkflowRoutes);
 app.use("/api/admin", applicationHistoryRoutes);
-app.use("/api/admin", scholarshipCycleRoutes);
 
-// Public Scholarship Application
+// Scholarship
+app.use("/api/admin", scholarshipCycleRoutes);
 app.use("/api/scholarship", scholarshipRoutes);
 
-// Dashboard & Reports
+// Dashboard
 app.use("/api/dashboard", dashboardRoutes);
+
+// Reports
 app.use("/api/reports", reportRoutes);
 
-// Settings, Pincode Lookup & Email Verification
+// Settings
 app.use("/api/settings", settingsRoutes);
+
+// Utilities
 app.use("/api/pincode", pincodeRoutes);
 app.use("/api/email", emailVerificationRoutes);
+app.use("/api/ifsc", ifscRoutes);
+app.use("/api/ocr", ocrRoutes);
 
-
-app.use(
-  "/api/ifsc",
-  ifscRoutes
-);
-
-app.use(
-  "/api/ocr",
-  ocrRoutes
-);
-
+// Trust
 app.use("/api/trustees", trusteeRoutes);
 
 app.use(
-  "/uploads/trustees",
-  express.static(
-    path.join(
-      __dirname,
-      "uploads/trustees"
-    )
-  )
-
-
-  
+    "/uploads/trustees",
+    express.static(path.join(__dirname, "uploads/trustees"))
 );
 
 app.use("/api/trust-documents", trustDocumentRoutes);
+
+/*
+|--------------------------------------------------------------------------
+| Fundraising
+|--------------------------------------------------------------------------
+*/
+
+app.use(
+    "/api/fundraising/donor-master",
+    donorRoutes
+);
+
+app.use(
+    "/api/fundraising/donations",
+    donationRoutes
+);
+
+app.use(
+    "/api/fundraising/receipts",
+    receiptRoutes
+);
+
+app.use(
+    "/api/fundraising/certificates",
+    certificateRoutes
+);
 
 /*
 |--------------------------------------------------------------------------
@@ -107,14 +162,27 @@ app.use("/api/trust-documents", trustDocumentRoutes);
 */
 
 app.get("/", (req, res) => {
-  res.send("Vidya Jyothi Foundation Backend Running 🚀");
+    res.send("🚀 Vidya Jyothi Foundation Backend Running");
 });
 
 app.get("/api/test", (req, res) => {
-  res.json({
-    success: true,
-    message: "Backend Connected Successfully 🎉",
-  });
+    res.json({
+        success: true,
+        message: "Backend Connected Successfully 🎉",
+    });
+});
+
+/*
+|--------------------------------------------------------------------------
+| 404 Handler
+|--------------------------------------------------------------------------
+*/
+
+app.use((req, res) => {
+    res.status(404).json({
+        success: false,
+        message: "API endpoint not found.",
+    });
 });
 
 /*
@@ -126,5 +194,5 @@ app.get("/api/test", (req, res) => {
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
-  console.log(`✅ Server running on port ${PORT}`);
+    console.log(`🚀 Server running on port ${PORT}`);
 });

@@ -1,5 +1,22 @@
 const nodemailer = require("nodemailer");
 
+
+
+
+
+
+const fs = require("fs");
+
+const {
+    generateReceiptPDF,
+} = require("./receiptPdfGenerator");
+
+const {
+    generateCertificatePDF,
+} = require("./certificatePdfGenerator");
+
+
+
 /*
 |--------------------------------------------------------------------------
 | Transporter
@@ -36,6 +53,17 @@ const sendOtpEmail = async (email, otp) => {
   if (!email || !otp) {
     throw new Error("sendOtpEmail requires both an email and an OTP.");
   }
+
+
+  /*
+|--------------------------------------------------------------------------
+| Generate Receipt PDF
+|--------------------------------------------------------------------------
+*/
+
+const pdf = await generateReceiptPDF(
+    receipt
+);
 
   const mailOptions = {
     from: `"Vidya Jyothi Foundation" <${process.env.EMAIL_USER}>`,
@@ -133,10 +161,42 @@ const sendOtpEmail = async (email, otp) => {
 
 </div>
 `,
+
+attachments: [
+
+    {
+
+        filename: pdf.fileName,
+
+        path: pdf.filePath,
+
+        contentType: "application/pdf",
+
+    },
+
+],
   };
 
   try {
     const info = await transporter.sendMail(mailOptions);
+
+    /*
+|--------------------------------------------------------------------------
+| Remove Temporary PDF
+|--------------------------------------------------------------------------
+*/
+
+if (
+    fs.existsSync(
+        pdf.filePath
+    )
+) {
+
+    fs.unlinkSync(
+        pdf.filePath
+    );
+
+}
 
     console.log("[emailService] OTP email sent:", {
       to: email,
@@ -407,10 +467,405 @@ const sendApplicationStatusEmail = async (
 };
 
 
+/*
+|--------------------------------------------------------------------------
+| Send Donation Receipt Email
+|--------------------------------------------------------------------------
+*/
+
+/*
+|--------------------------------------------------------------------------
+| Send Donation Receipt Email
+|--------------------------------------------------------------------------
+*/
+
+const sendReceiptEmail = async (receipt) => {
+
+    try {
+
+        const {
+
+            donor_name,
+            full_name,
+            email,
+            receipt_code,
+            receipt_date,
+            amount,
+            payment_mode,
+            donation_type,
+            receipt_status,
+
+        } = receipt;
+
+        if (!email) {
+
+            return {
+
+                success: false,
+                error: "Donor email address not available.",
+
+            };
+
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Generate PDF
+        |--------------------------------------------------------------------------
+        */
+
+        const pdf = await generateReceiptPDF(receipt);
+
+        /*
+        |--------------------------------------------------------------------------
+        | Email HTML
+        |--------------------------------------------------------------------------
+        */
+
+        const mailOptions = {
+
+            from: `"Vidya Jyothi Foundation" <${process.env.EMAIL_USER}>`,
+
+            to: email,
+
+            subject: `Donation Receipt - ${receipt_code}`,
+
+            html: `
+
+<div style="max-width:700px;margin:auto;font-family:Arial,sans-serif;background:#ffffff;border:1px solid #e5e7eb;border-radius:10px;overflow:hidden;">
+
+    <div style="background:#1d4ed8;padding:25px;text-align:center;">
+
+        <h1 style="margin:0;color:#ffffff;">
+
+            Vidya Jyothi Foundation
+
+        </h1>
+
+        <p style="margin-top:8px;color:#dbeafe;">
+
+            Donation Receipt
+
+        </p>
+
+    </div>
+
+    <div style="padding:35px;">
+
+        <h2 style="margin-top:0;color:#111827;">
+
+            Dear ${full_name || donor_name},
+
+        </h2>
+
+        <p style="line-height:1.8;color:#374151;">
+
+            Thank you for your generous contribution to
+            <strong>Vidya Jyothi Foundation.</strong>
+
+        </p>
+
+        <p style="line-height:1.8;color:#374151;">
+
+            Your donation has been received successfully.
+            Please find your official donation receipt attached
+            with this email.
+
+        </p>
+
+        <table
+            style="
+                width:100%;
+                border-collapse:collapse;
+                margin-top:25px;
+            ">
+
+            <tr>
+
+                <td style="padding:10px;border:1px solid #dddddd;font-weight:bold;">
+                    Receipt Number
+                </td>
+
+                <td style="padding:10px;border:1px solid #dddddd;">
+                    ${receipt_code}
+                </td>
+
+            </tr>
+
+            <tr>
+
+                <td style="padding:10px;border:1px solid #dddddd;font-weight:bold;">
+                    Receipt Date
+                </td>
+
+                <td style="padding:10px;border:1px solid #dddddd;">
+                    ${receipt_date}
+                </td>
+
+            </tr>
+
+            <tr>
+
+                <td style="padding:10px;border:1px solid #dddddd;font-weight:bold;">
+                    Donation Type
+                </td>
+
+                <td style="padding:10px;border:1px solid #dddddd;">
+                    ${donation_type}
+                </td>
+
+            </tr>
+
+            <tr>
+
+                <td style="padding:10px;border:1px solid #dddddd;font-weight:bold;">
+                    Payment Mode
+                </td>
+
+                <td style="padding:10px;border:1px solid #dddddd;">
+                    ${payment_mode}
+                </td>
+
+            </tr>
+
+            <tr>
+
+                <td style="padding:10px;border:1px solid #dddddd;font-weight:bold;">
+                    Amount
+                </td>
+
+                <td style="padding:10px;border:1px solid #dddddd;">
+                    ₹ ${Number(amount).toLocaleString("en-IN")}
+                </td>
+
+            </tr>
+
+            <tr>
+
+                <td style="padding:10px;border:1px solid #dddddd;font-weight:bold;">
+                    Receipt Status
+                </td>
+
+                <td style="padding:10px;border:1px solid #dddddd;">
+                    ${receipt_status}
+                </td>
+
+            </tr>
+
+        </table>
+
+        <p style="margin-top:30px;color:#374151;">
+
+            📎 Your official donation receipt is attached as a PDF.
+
+        </p>
+
+        <p style="margin-top:20px;">
+
+            Regards,
+
+            <br>
+
+            <strong>Vidya Jyothi Foundation</strong>
+
+        </p>
+
+    </div>
+
+    <div style="background:#f3f4f6;padding:18px;text-align:center;">
+
+        <small style="color:#6b7280;">
+
+            © 2026 Vidya Jyothi Foundation
+
+        </small>
+
+    </div>
+
+</div>
+
+`,
+
+            attachments: [
+
+                {
+
+                    filename: pdf.fileName,
+
+                    path: pdf.filePath,
+
+                    contentType: "application/pdf",
+
+                },
+
+            ],
+
+        };
+
+        /*
+        |--------------------------------------------------------------------------
+        | Send Email
+        |--------------------------------------------------------------------------
+        */
+
+        const info = await transporter.sendMail(mailOptions);
+
+        /*
+        |--------------------------------------------------------------------------
+        | Remove Temporary PDF
+        |--------------------------------------------------------------------------
+        */
+
+        if (
+
+            pdf.filePath &&
+            fs.existsSync(pdf.filePath)
+
+        ) {
+
+            fs.unlinkSync(pdf.filePath);
+
+        }
+
+        console.log("====================================");
+        console.log("Receipt Email Sent");
+        console.log("To :", email);
+        console.log("Receipt :", receipt_code);
+        console.log("PDF :", pdf.fileName);
+        console.log("Message ID :", info.messageId);
+        console.log("====================================");
+
+        return {
+
+            success: true,
+
+            messageId: info.messageId,
+
+        };
+
+    } catch (error) {
+
+        console.error("Receipt Email Error:", error);
+
+        return {
+
+            success: false,
+
+            error: error.message,
+
+        };
+
+    }
+
+};
+
+const sendCertificateEmail = async (certificate) => {
+
+    try {
+
+        const {
+
+            full_name,
+            email,
+            certificate_code,
+
+        } = certificate;
+
+        if (!email) {
+
+            return {
+                success: false,
+                error: "Donor email address not available."
+            };
+
+        }
+
+        // Generate PDF
+        const pdf = await generateCertificatePDF(certificate);
+
+        const mailOptions = {
+
+            from: `"Vidya Jyothi Foundation" <${process.env.EMAIL_USER}>`,
+
+            to: email,
+
+            subject: `Donation Certificate - ${certificate_code}`,
+
+            html: `
+                <h2>Dear ${full_name},</h2>
+
+                <p>
+                    Thank you for your generous contribution to
+                    <strong>Vidya Jyothi Foundation.</strong>
+                </p>
+
+                <p>
+                    Please find your Donation Certificate attached.
+                </p>
+
+                <p>
+                    Certificate Number:
+                    <strong>${certificate_code}</strong>
+                </p>
+
+                <br>
+
+                <p>
+                    Regards,<br>
+                    <strong>Vidya Jyothi Foundation</strong>
+                </p>
+            `,
+
+            attachments: [
+
+                {
+                    filename: pdf.fileName,
+                    path: pdf.filePath,
+                    contentType: "application/pdf",
+                }
+
+            ]
+
+        };
+
+        const info = await transporter.sendMail(mailOptions);
+
+        if (pdf.filePath && fs.existsSync(pdf.filePath)) {
+
+            fs.unlinkSync(pdf.filePath);
+
+        }
+
+        return {
+
+            success: true,
+
+            messageId: info.messageId,
+
+        };
+
+    } catch (error) {
+
+        return {
+
+            success: false,
+
+            error: error.message,
+
+        };
+
+    }
+
+};
+
 module.exports = {
 
-  sendOtpEmail,
+    sendOtpEmail,
 
-  sendApplicationStatusEmail,
+    sendApplicationStatusEmail,
+
+    sendReceiptEmail,
+
+    sendCertificateEmail,
 
 };
