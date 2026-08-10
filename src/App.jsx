@@ -69,6 +69,11 @@ import ReceiptList from "./pages/admin/receipts/ReceiptList";
 import ReceiptVerification from "./pages/public/ReceiptVerification";
 
 
+
+import CertificateDetails from "./pages/admin/certificates/CertificateDetails";
+
+
+
 function App() {
   return (
     <BrowserRouter basename={import.meta.env.BASE_URL}>
@@ -214,6 +219,11 @@ function App() {
     element={<ReceiptDetails />}
 />
 
+
+<Route
+    path="certificates/:certificateCode"
+    element={<CertificateDetails />}
+/>
 
 
           {/* Reports */}

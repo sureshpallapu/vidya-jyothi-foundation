@@ -83,3 +83,14 @@ export const restoreReceipt = (
             updated_by,
         }
     );
+
+    /*
+|--------------------------------------------------------------------------
+| Email Receipt
+|--------------------------------------------------------------------------
+*/
+
+export const emailReceipt = (receiptCode) =>
+    api.post(
+        `${BASE_URL}/${receiptCode}/email`
+    );

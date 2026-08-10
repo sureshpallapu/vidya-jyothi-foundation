@@ -3,6 +3,14 @@ import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 
 import {
+
+    generateCertificate,
+
+} from "../../../api/certificateApi";
+
+import GenerateCertificateModal from "../../../components/admin/certificates/GenerateCertificateModal";
+
+import {
   FaEye,
   FaEdit,
   FaArchive,
@@ -30,6 +38,29 @@ import {
   generateReceipt,
 } from "../../../api/donationApi";
 
+/*
+|--------------------------------------------------------------------------
+| Path notes
+|--------------------------------------------------------------------------
+| This file lives at: src/pages/admin/donations/Donations.jsx
+|
+| Assumed project structure:
+|   src/api/donationApi.js
+|   src/api/certificateApi.js
+|   src/components/admin/certificates/GenerateCertificateModal.jsx
+|
+| From src/pages/admin/donations/, reaching src/ requires three "../"
+| (donations -> admin -> pages -> src), which is why donationApi already
+| used "../../../api/donationApi" correctly, while the other two imports
+| were pointed at the wrong depth ("../../api/certificateApi" and
+| "../certificates/GenerateCertificateModal"), causing Vite's
+| import-analysis plugin to fail resolving them.
+|
+| If your actual folder layout differs, adjust these three import paths
+| to match — everything else in this file is layout-independent.
+|--------------------------------------------------------------------------
+*/
+
 const STATUS_STYLES = {
   RECEIVED: "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200",
   CLEARED: "bg-sky-50 text-sky-700 ring-1 ring-sky-200",
@@ -44,6 +75,9 @@ function AdminDonations() {
   /* ==========================================================
       State
   ========================================================== */
+
+  const [certificateModalOpen, setCertificateModalOpen] = useState(false);
+  const [selectedDonation, setSelectedDonation] = useState(null);
 
   const [loading, setLoading] = useState(false);
   const [statistics, setStatistics] = useState({});
@@ -63,158 +97,6 @@ function AdminDonations() {
     financialYear: "",
     includeArchived: false,
   });
-
-  /* ==========================================================
-      Actions
-  ========================================================== */
-
-const handleView = (donationCode) => {
-    navigate(`/admin/donations/${donationCode}`);
-};
-
-const handleEdit = (donationCode) => {
-    navigate(`/admin/donations/${donationCode}/edit`);
-};
-  const handleCancel = async (donationCode) => {
-    const result = await Swal.fire({
-      title: "Cancel Donation?",
-      text: "This action cannot be undone.",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonText: "Yes, Cancel",
-      confirmButtonColor: "#dc2626",
-    });
-
-    if (!result.isConfirmed) return;
-
-    try {
-      await cancelDonation(donationCode);
-
-      Swal.fire(
-        "Cancelled!",
-        "Donation cancelled successfully.",
-        "success"
-      );
-
-      loadDonations();
-      loadStatistics();
-    } catch (error) {
-      Swal.fire(
-        "Error",
-        error.response?.data?.message || "Unable to cancel donation.",
-        "error"
-      );
-    }
-  };
-
-  const handleArchive = async (donationCode) => {
-    const result = await Swal.fire({
-      title: "Archive Donation?",
-      icon: "question",
-      showCancelButton: true,
-      confirmButtonText: "Archive",
-      confirmButtonColor: "#dc2626",
-    });
-
-    if (!result.isConfirmed) return;
-
-    try {
-      await archiveDonation(donationCode);
-
-      Swal.fire(
-        "Archived!",
-        "Donation archived successfully.",
-        "success"
-      );
-
-      loadDonations();
-      loadStatistics();
-    } catch (error) {
-      Swal.fire(
-        "Error",
-        error.response?.data?.message || "Unable to archive donation.",
-        "error"
-      );
-    }
-  };
-
-  const handleRestore = async (donationCode) => {
-    const result = await Swal.fire({
-      title: "Restore Donation?",
-      icon: "question",
-      showCancelButton: true,
-      confirmButtonText: "Restore",
-      confirmButtonColor: "#16a34a",
-    });
-
-    if (!result.isConfirmed) return;
-
-    try {
-      await restoreDonation(donationCode);
-
-      Swal.fire(
-        "Restored!",
-        "Donation restored successfully.",
-        "success"
-      );
-
-      loadDonations();
-      loadStatistics();
-    } catch (error) {
-      Swal.fire(
-        "Error",
-        error.response?.data?.message || "Unable to restore donation.",
-        "error"
-      );
-    }
-  };
-
-  const handleGenerateReceipt = async (donation) => {
-
-  const result = await Swal.fire({
-    title: "Generate Receipt?",
-    text: `Generate receipt for ${donation.donation_code}?`,
-    icon: "question",
-    showCancelButton: true,
-    confirmButtonText: "Generate",
-    confirmButtonColor: "#16a34a",
-  });
-
-  if (!result.isConfirmed) return;
-
-  try {
-
-    const payload = {
-      donation_id: donation.id,
-      receipt_date: new Date().toISOString().split("T")[0],
-      created_by: 1,
-      updated_by: 1,
-    };
-
-    const response = await generateReceipt(payload);
-
-    Swal.fire({
-      icon: "success",
-      title: "Receipt Generated",
-      text: response.data.message,
-    });
-
-    loadDonations();
-    loadStatistics();
-
-  } catch (error) {
-
-    Swal.fire({
-      icon: "error",
-      title: "Error",
-      text:
-        error.response?.data?.message ||
-        "Unable to generate receipt.",
-    });
-
-  }
-
-};
 
   /* ==========================================================
       Loaders
@@ -280,6 +162,159 @@ const handleEdit = (donationCode) => {
   }, [page, limit, filters]);
 
   /* ==========================================================
+      Actions
+  ========================================================== */
+
+  const handleView = (donationCode) => {
+    navigate(`/admin/donations/${donationCode}`);
+  };
+
+  const handleEdit = (donationCode) => {
+    navigate(`/admin/donations/${donationCode}/edit`);
+  };
+
+  const handleCancel = async (donationCode) => {
+    const result = await Swal.fire({
+      title: "Cancel Donation?",
+      text: "This action cannot be undone.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, Cancel",
+      confirmButtonColor: "#dc2626",
+    });
+
+    if (!result.isConfirmed) return;
+
+    try {
+      await cancelDonation(donationCode);
+
+      Swal.fire("Cancelled!", "Donation cancelled successfully.", "success");
+
+      loadDonations();
+      loadStatistics();
+    } catch (error) {
+      Swal.fire(
+        "Error",
+        error.response?.data?.message || "Unable to cancel donation.",
+        "error"
+      );
+    }
+  };
+
+  const handleArchive = async (donationCode) => {
+    const result = await Swal.fire({
+      title: "Archive Donation?",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonText: "Archive",
+      confirmButtonColor: "#dc2626",
+    });
+
+    if (!result.isConfirmed) return;
+
+    try {
+      await archiveDonation(donationCode);
+
+      Swal.fire("Archived!", "Donation archived successfully.", "success");
+
+      loadDonations();
+      loadStatistics();
+    } catch (error) {
+      Swal.fire(
+        "Error",
+        error.response?.data?.message || "Unable to archive donation.",
+        "error"
+      );
+    }
+  };
+
+  const handleRestore = async (donationCode) => {
+    const result = await Swal.fire({
+      title: "Restore Donation?",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonText: "Restore",
+      confirmButtonColor: "#16a34a",
+    });
+
+    if (!result.isConfirmed) return;
+
+    try {
+      await restoreDonation(donationCode);
+
+      Swal.fire("Restored!", "Donation restored successfully.", "success");
+
+      loadDonations();
+      loadStatistics();
+    } catch (error) {
+      Swal.fire(
+        "Error",
+        error.response?.data?.message || "Unable to restore donation.",
+        "error"
+      );
+    }
+  };
+
+  const handleGenerateReceipt = async (donation) => {
+    const result = await Swal.fire({
+      title: "Generate Receipt?",
+      text: `Generate receipt for ${donation.donation_code}?`,
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonText: "Generate",
+      confirmButtonColor: "#16a34a",
+    });
+
+    if (!result.isConfirmed) return;
+
+    try {
+      const payload = {
+        donation_id: donation.id,
+        receipt_date: new Date().toISOString().split("T")[0],
+        created_by: 1,
+        updated_by: 1,
+      };
+
+      const response = await generateReceipt(payload);
+
+      Swal.fire({
+        icon: "success",
+        title: "Receipt Generated",
+        text: response.data.message,
+      });
+
+      loadDonations();
+      loadStatistics();
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: error.response?.data?.message || "Unable to generate receipt.",
+      });
+    }
+  };
+
+  const handleOpenCertificateModal = (donation) => {
+    setSelectedDonation(donation);
+    setCertificateModalOpen(true);
+  };
+
+  const handleCloseCertificateModal = () => {
+    setCertificateModalOpen(false);
+    setSelectedDonation(null);
+  };
+
+  const handleCertificateGenerated = () => {
+    handleCloseCertificateModal();
+    loadDonations();
+    loadStatistics();
+  };
+
+  const handleViewCertificate = (certificateCode) => {
+    navigate(`/admin/certificates/${certificateCode}`);
+  };
+
+  /* ==========================================================
       Derived
   ========================================================== */
 
@@ -323,6 +358,68 @@ const handleEdit = (donationCode) => {
     ],
     [statistics]
   );
+
+
+  const handleGenerateCertificate = async (data) => {
+
+    try {
+
+        const response = await generateCertificate({
+
+            donation_id: data.donation.id,
+
+            certificate_type: data.certificate_type,
+
+            remarks: data.remarks,
+
+        });
+
+        Swal.fire({
+
+            icon: "success",
+
+            title: "Certificate Generated",
+
+            text: response.data.message,
+
+            timer: 1800,
+
+            showConfirmButton: false,
+
+        });
+
+        handleCloseCertificateModal();
+
+        loadDonations();
+
+        loadStatistics();
+
+        navigate(
+
+            `/admin/certificates/${response.data.data.certificate_code}`
+
+        );
+
+    } catch (error) {
+
+        Swal.fire({
+
+            icon: "error",
+
+            title: "Generation Failed",
+
+            text:
+
+                error.response?.data?.message ||
+
+                "Unable to generate certificate.",
+
+        });
+
+    }
+
+};
+
 
   /* ==========================================================
       Render
@@ -459,10 +556,7 @@ const handleEdit = (donationCode) => {
                 className="w-full appearance-none border border-slate-200 rounded-xl pl-4 pr-9 py-2.5 text-sm outline-none focus:ring-2 focus:ring-indigo-500/40 focus:border-indigo-400 bg-white transition"
                 value={filters.donationTypeId}
                 onChange={(e) =>
-                  setFilters({
-                    ...filters,
-                    donationTypeId: e.target.value,
-                  })
+                  setFilters({ ...filters, donationTypeId: e.target.value })
                 }
               >
                 <option value="">All Types</option>
@@ -482,10 +576,7 @@ const handleEdit = (donationCode) => {
                 className="w-full appearance-none border border-slate-200 rounded-xl pl-4 pr-9 py-2.5 text-sm outline-none focus:ring-2 focus:ring-indigo-500/40 focus:border-indigo-400 bg-white transition"
                 value={filters.paymentModeId}
                 onChange={(e) =>
-                  setFilters({
-                    ...filters,
-                    paymentModeId: e.target.value,
-                  })
+                  setFilters({ ...filters, paymentModeId: e.target.value })
                 }
               >
                 <option value="">All Modes</option>
@@ -590,6 +681,9 @@ const handleEdit = (donationCode) => {
                       Receipt
                     </th>
                     <th className="px-4 py-3.5 font-semibold text-center">
+                      Certificate
+                    </th>
+                    <th className="px-4 py-3.5 font-semibold text-center">
                       Actions
                     </th>
                   </tr>
@@ -667,55 +761,103 @@ const handleEdit = (donationCode) => {
 
                       {/* Receipt */}
 
-                     <td className="px-4 py-3.5 text-center">
-{donation.receipt_generated ? (
-  <div className="flex flex-col items-center gap-1">
-    <span className="text-emerald-600 font-semibold text-xs">
-      Generated
-    </span>
+                      <td className="px-4 py-3.5 text-center">
+                        {donation.receipt_generated ? (
+                          <div className="flex flex-col items-center gap-1">
+                            <span className="text-emerald-600 font-semibold text-xs">
+                              Generated
+                            </span>
 
-    <span className="text-[11px] font-mono text-slate-500">
-      {donation.receipt_code}
-    </span>
+                            <span className="text-[11px] font-mono text-slate-500">
+                              {donation.receipt_code}
+                            </span>
 
-    <button
-      onClick={() =>
-        navigate(`/admin/receipts/${donation.receipt_code}`)
-      }
-      className="text-xs text-indigo-600 hover:text-indigo-800 font-medium"
-    >
-      View Receipt
-    </button>
-  </div>
-) : (
-    <div className="flex flex-col items-center gap-2">
-      <span className="text-orange-500 font-semibold text-xs">
-        Pending
-      </span>
+                            <button
+                              onClick={() =>
+                                navigate(
+                                  `/admin/receipts/${donation.receipt_code}`
+                                )
+                              }
+                              className="text-xs text-indigo-600 hover:text-indigo-800 font-medium"
+                            >
+                              View Receipt
+                            </button>
+                          </div>
+                        ) : (
+                          <div className="flex flex-col items-center gap-2">
+                            <span className="text-orange-500 font-semibold text-xs">
+                              Pending
+                            </span>
 
-      <button
-        onClick={() => handleGenerateReceipt(donation)}
-        className="px-3 py-1 rounded-md bg-emerald-600 text-white text-xs font-medium hover:bg-emerald-700 transition"
-      >
-        Generate Receipt
-      </button>
-    </div>
-  )}
+                            <button
+                              onClick={() => handleGenerateReceipt(donation)}
+                              className="px-3 py-1 rounded-md bg-emerald-600 text-white text-xs font-medium hover:bg-emerald-700 transition"
+                            >
+                              Generate Receipt
+                            </button>
+                          </div>
+                        )}
+                      </td>
 
-</td>
+                      {/* Certificate */}
+
+                      <td className="px-4 py-4 text-center">
+                        {!donation.receipt_generated ? (
+                          <div className="space-y-1">
+                            <span className="text-xs font-semibold text-gray-500">
+                              Receipt Required
+                            </span>
+                          </div>
+                        ) : donation.certificate_generated ? (
+                          <div className="space-y-1">
+                            <div className="text-green-600 text-xs font-bold">
+                              Generated
+                            </div>
+
+                            <div className="text-[11px] text-gray-500">
+                              {donation.certificate_code}
+                            </div>
+
+                            <button
+                              onClick={() =>
+                                handleViewCertificate(
+                                  donation.certificate_code
+                                )
+                              }
+                              className="mt-1 text-xs text-blue-600 hover:underline"
+                            >
+                              View Certificate
+                            </button>
+                          </div>
+                        ) : (
+                          <div className="space-y-1">
+                            <div className="text-orange-500 text-xs font-bold">
+                              Pending
+                            </div>
+
+                            <button
+                              onClick={() =>
+                                handleOpenCertificateModal(donation)
+                              }
+                              className="rounded bg-purple-600 px-3 py-1 text-xs font-semibold text-white hover:bg-purple-700"
+                            >
+                              Generate Certificate
+                            </button>
+                          </div>
+                        )}
+                      </td>
 
                       {/* Actions */}
 
                       <td className="px-4 py-3.5">
                         <div className="flex justify-center gap-3">
                           <button
-    onClick={() =>
-        navigate(`/admin/donations/${donation.donation_code}`)
-    }
-    className="text-blue-600 hover:text-blue-800"
->
-    <FaEye />
-</button>
+                            onClick={() => handleView(donation.donation_code)}
+                            title="View"
+                            className="text-blue-600 hover:text-blue-800"
+                          >
+                            <FaEye />
+                          </button>
 
                           {!donation.is_archived &&
                             donation.status !== "CANCELLED" && (
@@ -804,6 +946,17 @@ const handleEdit = (donationCode) => {
           </button>
         </div>
       </div>
+
+      {/* ==========================================================
+          Generate Certificate Modal
+      ========================================================== */}
+
+      <GenerateCertificateModal
+    open={certificateModalOpen}
+    donation={selectedDonation}
+    onClose={handleCloseCertificateModal}
+    onGenerate={handleGenerateCertificate}
+/>
     </div>
   );
 }

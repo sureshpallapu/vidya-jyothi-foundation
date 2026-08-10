@@ -3,10 +3,12 @@ import { useNavigate, useParams } from "react-router-dom";
 import Swal from "sweetalert2";
 
 import {
-  getReceipt,
-  archiveReceipt,
-  restoreReceipt,
+    getReceipt,
+    archiveReceipt,
+    restoreReceipt,
+    emailReceipt,
 } from "../../../api/receiptApi";
+
 
 import ReceiptDetailsHeader from "../../../components/admin/receipts/ReceiptDetailsHeader";
 import ReceiptViewer from "../../../components/admin/receipts/viewer/ReceiptViewer";
@@ -122,13 +124,46 @@ const handleDownloadPDF = async () => {
 
 };
 
-  const handleEmail = () => {
-    Swal.fire({
-      icon: "info",
-      title: "Coming Soon",
-      text: "Email Receipt feature will be implemented next.",
-    });
-  };
+const handleEmail = async () => {
+
+    try {
+
+        Swal.fire({
+            title: "Sending Receipt...",
+            text: "Please wait",
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            },
+        });
+
+        const response = await emailReceipt(
+            receipt.receipt_code
+        );
+
+        Swal.fire({
+            icon: "success",
+            title: "Email Sent",
+            text:
+                response.data.message ||
+                "Receipt emailed successfully.",
+        });
+
+    } catch (error) {
+
+        console.error(error);
+
+        Swal.fire({
+            icon: "error",
+            title: "Email Failed",
+            text:
+                error.response?.data?.message ||
+                "Unable to send receipt email.",
+        });
+
+    }
+
+};
 
   if (loading) {
     return (
