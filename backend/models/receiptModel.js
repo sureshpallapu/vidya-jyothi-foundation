@@ -983,38 +983,85 @@ static async statistics() {
 |--------------------------------------------------------------------------
 */
 
+/*
+|--------------------------------------------------------------------------
+| Get Complete Receipt Details For Email / PDF
+|--------------------------------------------------------------------------
+*/
+
 static async getReceiptForEmail(receiptCode) {
 
     const [rows] = await db.execute(
         `
         SELECT
 
+            /* ==========================================================
+               RECEIPT
+            ========================================================== */
+
+            r.id AS receipt_id,
             r.receipt_code,
             r.receipt_date,
             r.receipt_type,
+            r.financial_year,
+            r.amount,
+            r.tax_exemption,
             r.receipt_status,
 
+            /* ==========================================================
+               DONATION
+            ========================================================== */
+
+            d.id AS donation_id,
             d.donation_code,
-            d.amount,
+            d.donation_date,
             d.reference_number,
+            d.cheque_number,
+            d.cheque_date,
+            d.bank_name,
+            d.branch_name,
             d.transaction_id,
+            d.upi_reference,
+            d.remarks,
+            d.status AS donation_status,
+
+            /* ==========================================================
+               DONATION TYPE
+            ========================================================== */
 
             dt.type_name AS donation_type,
+            dt.type_name AS donation_purpose,
+
+            /* ==========================================================
+               PAYMENT
+            ========================================================== */
 
             pm.mode_name AS payment_mode,
 
+            /* ==========================================================
+               DONOR
+            ========================================================== */
+
+            dn.id AS donor_id,
+            dn.donor_code,
+            dn.full_name,
             dn.full_name AS donor_name,
-            dn.email,
+            dn.display_name,
             dn.mobile,
+            dn.alternate_mobile,
+            dn.email,
+            dn.pan_number,
+            dn.aadhaar_number,
 
             CONCAT_WS(
                 ', ',
-                dn.address_line1,
-                dn.address_line2,
-                dn.city,
-                dn.district,
-                dn.state,
-                dn.pincode
+                NULLIF(dn.address_line1, ''),
+                NULLIF(dn.address_line2, ''),
+                NULLIF(dn.city, ''),
+                NULLIF(dn.district, ''),
+                NULLIF(dn.state, ''),
+                NULLIF(dn.country, ''),
+                NULLIF(dn.pincode, '')
             ) AS address
 
         FROM receipts r
@@ -1041,7 +1088,6 @@ static async getReceiptForEmail(receiptCode) {
     return rows.length ? rows[0] : null;
 
 }
-
 
 }
 

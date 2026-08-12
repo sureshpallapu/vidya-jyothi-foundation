@@ -55,16 +55,6 @@ const sendOtpEmail = async (email, otp) => {
   }
 
 
-  /*
-|--------------------------------------------------------------------------
-| Generate Receipt PDF
-|--------------------------------------------------------------------------
-*/
-
-const pdf = await generateReceiptPDF(
-    receipt
-);
-
   const mailOptions = {
     from: `"Vidya Jyothi Foundation" <${process.env.EMAIL_USER}>`,
     to: email,
@@ -162,41 +152,15 @@ const pdf = await generateReceiptPDF(
 </div>
 `,
 
-attachments: [
 
-    {
-
-        filename: pdf.fileName,
-
-        path: pdf.filePath,
-
-        contentType: "application/pdf",
-
-    },
-
-],
   };
 
   try {
     const info = await transporter.sendMail(mailOptions);
 
-    /*
-|--------------------------------------------------------------------------
-| Remove Temporary PDF
-|--------------------------------------------------------------------------
-*/
+ 
 
-if (
-    fs.existsSync(
-        pdf.filePath
-    )
-) {
 
-    fs.unlinkSync(
-        pdf.filePath
-    );
-
-}
 
     console.log("[emailService] OTP email sent:", {
       to: email,

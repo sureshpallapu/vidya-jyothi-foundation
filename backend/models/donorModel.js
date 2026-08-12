@@ -104,7 +104,40 @@ query += " LIMIT 1";
             donor,
         };
     }
+/*
+|--------------------------------------------------------------------------
+| Find Donor By Email
+|--------------------------------------------------------------------------
+*/
 
+async findByEmail(email) {
+
+    if (!email) {
+        return null;
+    }
+
+    const [rows] = await db.execute(
+        `
+        SELECT
+            d.*,
+            dt.type_name AS donor_type
+
+        FROM donors d
+
+        LEFT JOIN donor_types dt
+            ON dt.id = d.donor_type_id
+
+        WHERE LOWER(d.email) = LOWER(?)
+
+        AND d.status = 'ACTIVE'
+
+        LIMIT 1
+        `,
+        [email.trim()]
+    );
+
+    return rows[0] || null;
+}
     /*
     |--------------------------------------------------------------------------
     | Find Donor By Code

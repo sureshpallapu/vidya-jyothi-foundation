@@ -1032,6 +1032,273 @@ async getStatistics() {
 }
 
 
+
+/*
+|--------------------------------------------------------------------------
+| Find Donation By Razorpay Order ID
+|--------------------------------------------------------------------------
+| Used by Razorpay webhook reconciliation.
+|
+| reference_number stores the Razorpay order ID for online donations.
+|--------------------------------------------------------------------------
+*/
+/*
+|--------------------------------------------------------------------------
+| Find Donation By ID
+|--------------------------------------------------------------------------
+*/
+
+async findById(donationId) {
+
+    if (!donationId) {
+        return null;
+    }
+
+    const [rows] = await db.execute(
+        `
+        SELECT
+            d.*,
+
+            dn.donor_code,
+            dn.full_name,
+            dn.email,
+            dn.mobile,
+
+            dt.type_name AS donation_type,
+
+            pm.mode_name AS payment_mode
+
+        FROM donations d
+
+        INNER JOIN donors dn
+            ON dn.id = d.donor_id
+
+        INNER JOIN donation_types dt
+            ON dt.id = d.donation_type_id
+
+        INNER JOIN payment_modes pm
+            ON pm.id = d.payment_mode_id
+
+        WHERE d.id = ?
+
+        LIMIT 1
+        `,
+        [donationId]
+    );
+
+    return rows[0] || null;
 }
+
+
+/*
+|--------------------------------------------------------------------------
+| Find Donation By Razorpay Payment ID
+|--------------------------------------------------------------------------
+| Used for duplicate protection.
+|
+| transaction_id stores the Razorpay payment ID.
+|--------------------------------------------------------------------------
+*/
+
+async findByRazorpayPaymentId(paymentId) {
+
+    if (!paymentId) {
+        return null;
+    }
+
+    const [rows] = await db.execute(
+        `
+        SELECT
+            id,
+            donation_code,
+            donor_id,
+            amount,
+            currency,
+            status,
+            reference_number,
+            transaction_id,
+            receipt_generated,
+            receipt_id
+        FROM donations
+        WHERE transaction_id = ?
+        LIMIT 1
+        `,
+        [paymentId]
+    );
+
+    return rows[0] || null;
+}
+
+/*
+|--------------------------------------------------------------------------
+| Update Razorpay Payment ID
+|--------------------------------------------------------------------------
+| Used by webhook reconciliation after payment.captured.
+|--------------------------------------------------------------------------
+*/
+
+async updateRazorpayPaymentId(
+    donationId,
+    paymentId
+) {
+
+    if (!donationId || !paymentId) {
+        throw new Error(
+            "Donation ID and Razorpay payment ID are required."
+        );
+    }
+
+
+    const [result] =
+        await db.execute(
+            `
+            UPDATE donations
+            SET
+                transaction_id = ?,
+                updated_by = 1
+            WHERE id = ?
+            AND (
+                transaction_id IS NULL
+                OR transaction_id = ''
+            )
+            `,
+            [
+                paymentId,
+                donationId
+            ]
+        );
+
+
+    return result.affectedRows;
+
+}
+
+/*
+|--------------------------------------------------------------------------
+| Update Donation After Razorpay Payment
+|--------------------------------------------------------------------------
+| Used when Razorpay webhook confirms payment.captured.
+|--------------------------------------------------------------------------
+*/
+
+async updateRazorpayPaymentSuccess(
+    donationId,
+    paymentId,
+    status = "RECEIVED"
+) {
+
+    if (!donationId || !paymentId) {
+
+        throw new Error(
+            "Donation ID and Razorpay payment ID are required."
+        );
+
+    }
+
+    const [result] = await db.execute(
+        `
+        UPDATE donations
+        SET
+            transaction_id = ?,
+            status = ?,
+            updated_by = 1
+        WHERE id = ?
+        `,
+        [
+            paymentId,
+            status,
+            donationId
+        ]
+    );
+
+    return result.affectedRows;
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| Find Donation By Razorpay Order ID
+|--------------------------------------------------------------------------
+*/
+
+async findByRazorpayOrderId(orderId) {
+
+    if (!orderId) {
+        return null;
+    }
+
+    const [rows] = await db.execute(
+        `
+        SELECT
+            d.*,
+            dn.donor_code,
+            dn.full_name,
+            dn.email,
+            dn.mobile,
+            dt.type_name AS donation_type,
+            pm.mode_name AS payment_mode
+        FROM donations d
+
+        INNER JOIN donors dn
+            ON dn.id = d.donor_id
+
+        INNER JOIN donation_types dt
+            ON dt.id = d.donation_type_id
+
+        INNER JOIN payment_modes pm
+            ON pm.id = d.payment_mode_id
+
+        WHERE d.reference_number = ?
+
+        LIMIT 1
+        `,
+        [orderId]
+    );
+
+    return rows[0] || null;
+}
+/*
+|--------------------------------------------------------------------------
+| Find Donation By Transaction ID
+|--------------------------------------------------------------------------
+*/
+
+async findByTransactionId(transactionId) {
+
+    if (!transactionId) {
+        return null;
+    }
+
+    const [rows] = await db.execute(
+        `
+        SELECT
+            id,
+            donation_code,
+            donor_id,
+            amount,
+            currency,
+            status,
+            transaction_id
+        FROM donations
+        WHERE transaction_id = ?
+        LIMIT 1
+        `,
+        [transactionId]
+    );
+
+
+    return rows[0] || null;
+
+
+    
+}
+
+
+
+
+}
+
+
+
 
 module.exports = new DonationModel();
