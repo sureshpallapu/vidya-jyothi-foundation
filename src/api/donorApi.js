@@ -37,3 +37,9 @@ export const restoreDonor = (donorCode) =>
 
 export const getDonorTypes = () =>
   api.get(`${BASE_URL}/types`);
+
+export const getPublicDonorLeaderboard = () =>
+    api.get("/public/donations/leaderboard");
+
+export const getPublicTopDonors = () =>
+    api.get("/public/donations/top-donors");

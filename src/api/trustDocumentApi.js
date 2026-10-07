@@ -81,3 +81,10 @@ export const downloadDocument = (id) =>
 
 export const previewDocument = (id) =>
   `${API_URL}/${id}/preview`;
+
+// ============================
+// Public Bank Records
+// ============================
+
+export const getPublicBankRecords = () =>
+  axios.get(`${API_URL}/bank-records`);

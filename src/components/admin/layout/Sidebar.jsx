@@ -18,6 +18,10 @@ import {
   FaSignOutAlt,
   FaGraduationCap,
   FaUserCircle,
+  FaUserFriends,
+  FaUserClock,
+  FaUserCheck,
+  FaUserPlus,
 } from "react-icons/fa";
 
 function Sidebar({ collapsed }) {
@@ -122,6 +126,37 @@ function Sidebar({ collapsed }) {
       roles: ["SUPER_ADMIN"],
     },
   
+    
+{
+  heading: "ACTIVITIES MANAGEMENT",
+},
+
+{
+  title: "Activities ",
+  icon: <FaUsers />,
+  path: "/admin/activities",
+  roles: [
+    "SUPER_ADMIN",
+    "FOUNDER",
+    "VERIFICATION_OFFICER",
+  ],
+},
+
+  
+{
+  heading: "VOLUNTEERS MANAGEMENT",
+},
+
+{
+  title: "Volunteers",
+  icon: <FaUsers />,
+  path: "/admin/volunteers",
+  roles: [
+    "SUPER_ADMIN",
+    "FOUNDER",
+    "VERIFICATION_OFFICER",
+  ],
+},
 
     {
   heading: "TRUST MANAGEMENT",

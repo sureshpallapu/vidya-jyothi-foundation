@@ -37,3 +37,6 @@ export const checkApplicationStatus = (data) =>
     "/scholarship/status",
     data
   );
+
+  export const getScholarshipCycles = () =>
+  API.get("/scholarship/cycles");

@@ -1,5 +1,4 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";import { useNavigate } from "react-router-dom";
 import scholarshipInitialData from "../../data/scholarshipInitialData";
 import scholarshipSteps from "../../data/scholarshipSteps";
 
@@ -10,6 +9,7 @@ import stepValidation from "../../utils/stepValidation";
 import {
   submitApplication,
   uploadScholarshipDocuments,
+  getScholarshipCycles,
 } from "../../api/scholarshipApi";
 
 import { Link } from "react-router-dom";
@@ -21,6 +21,11 @@ function ScholarshipApplication() {
   const navigate = useNavigate();
 
 const [loading, setLoading] = useState(false);
+// Scholarship cycle state
+const [cycleLoading, setCycleLoading] = useState(true);
+const [cycles, setCycles] = useState([]);
+const [cycleError, setCycleError] = useState("");
+
 
 // Aadhaar OCR processing state
 const [aadhaarVerifying, setAadhaarVerifying] =
@@ -36,6 +41,81 @@ const [currentStep, setCurrentStep] = useState(1);
 
   // Validation Errors
   const [errors, setErrors] = useState({});
+
+  // Load scholarship cycles
+useEffect(() => {
+  const loadScholarshipCycles = async () => {
+    try {
+      setCycleLoading(true);
+      setCycleError("");
+
+      const response = await getScholarshipCycles();
+
+      setCycles(response.data?.data || []);
+    } catch (error) {
+      console.error(
+        "Failed to load scholarship cycles:",
+        error
+      );
+
+      setCycleError(
+        "Unable to load scholarship information. Please try again later."
+      );
+    } finally {
+      setCycleLoading(false);
+    }
+  };
+
+  loadScholarshipCycles();
+}, []);
+
+
+// Currently active scholarship cycle
+const activeCycle = cycles.find(
+  (cycle) => Number(cycle.is_active) === 1
+);
+
+// Get today's date
+const today = new Date();
+today.setHours(0, 0, 0, 0);
+
+// Find the nearest upcoming inactive cycle
+const upcomingCycles = cycles
+  .filter((cycle) => {
+    if (Number(cycle.is_active) === 1) {
+      return false;
+    }
+
+    if (!cycle.start_date) {
+      return false;
+    }
+
+    const startDate = new Date(cycle.start_date);
+    startDate.setHours(0, 0, 0, 0);
+
+    return startDate >= today;
+  })
+  .sort(
+    (a, b) =>
+      new Date(a.start_date) -
+      new Date(b.start_date)
+  );
+
+const nextCycle = upcomingCycles[0];
+const formatCycleDate = (date) => {
+  if (!date) {
+    return "Not announced";
+  }
+
+  return new Date(date).toLocaleDateString(
+    "en-IN",
+    {
+      day: "2-digit",
+      month: "long",
+      year: "numeric",
+    }
+  );
+};
 
   // Current Step Component
   const CurrentStepComponent =
@@ -300,28 +380,225 @@ const handleFinalSubmit = async () => {
 
 </div>
 
-      <ProgressBar currentStep={currentStep} />
+      
+{/* Scholarship Application Area */}
 
-      <div className="mt-6 rounded-xl bg-white shadow-lg p-8">
+{cycleLoading ? (
 
-        <CurrentStepComponent
-  formData={formData}
-  setFormData={setFormData}
-  errors={errors}
-  aadhaarVerifying={aadhaarVerifying}
-  setAadhaarVerifying={setAadhaarVerifying}
-/>
+  <div className="mt-8 rounded-2xl bg-white shadow-lg p-10">
+
+    <div className="flex flex-col items-center justify-center text-center">
+
+      <div className="h-12 w-12 animate-spin rounded-full border-4 border-yellow-200 border-t-yellow-700"></div>
+
+      <h3 className="mt-5 text-xl font-semibold text-gray-800">
+        Checking Scholarship Applications
+      </h3>
+
+      <p className="mt-2 text-gray-500">
+        Please wait while we check the current scholarship cycle.
+      </p>
+
+    </div>
+
+  </div>
+
+) : cycleError ? (
+
+  <div className="mt-8 rounded-2xl border border-red-200 bg-red-50 p-8 text-center">
+
+    <div className="text-5xl">
+      ⚠️
+    </div>
+
+    <h2 className="mt-4 text-2xl font-bold text-red-800">
+      Unable to Load Scholarship Information
+    </h2>
+
+    <p className="mt-3 text-gray-700">
+      {cycleError}
+    </p>
+
+  </div>
+
+) : activeCycle ? (
+
+  <>
+    <ProgressBar currentStep={currentStep} />
+
+    <div className="mt-6 rounded-xl bg-white shadow-lg p-8">
+
+      <CurrentStepComponent
+        formData={formData}
+        setFormData={setFormData}
+        errors={errors}
+        aadhaarVerifying={aadhaarVerifying}
+        setAadhaarVerifying={setAadhaarVerifying}
+      />
+
+    </div>
+
+    <StepNavigation
+      currentStep={currentStep}
+      handleNext={handleNext}
+      handlePrevious={handlePrevious}
+      handleFinalSubmit={handleFinalSubmit}
+      loading={loading}
+      aadhaarVerifying={aadhaarVerifying}
+    />
+  </>
+
+) : (
+
+  <div className="mt-8">
+
+    <div className="rounded-3xl border border-yellow-200 bg-gradient-to-br from-yellow-50 via-white to-orange-50 p-8 md:p-12 shadow-xl">
+
+      <div className="mx-auto max-w-3xl text-center">
+
+        <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-yellow-100 text-4xl shadow-inner">
+          🎓
+        </div>
+
+        <span className="mt-6 inline-flex rounded-full bg-yellow-100 px-4 py-2 text-sm font-semibold text-yellow-800">
+          Applications Currently Closed
+        </span>
+
+        <h2 className="mt-5 text-3xl md:text-4xl font-bold text-gray-900">
+          Scholarship Applications Are Currently Closed
+        </h2>
+
+        <p className="mx-auto mt-4 max-w-2xl text-lg leading-8 text-gray-600">
+
+          There is currently no active scholarship cycle.
+          Please check the information below for the next
+          scholarship opportunity.
+
+        </p>
 
       </div>
 
-     <StepNavigation
-  currentStep={currentStep}
-  handleNext={handleNext}
-  handlePrevious={handlePrevious}
-  handleFinalSubmit={handleFinalSubmit}
-  loading={loading}
-  aadhaarVerifying={aadhaarVerifying}
-/>
+
+      {nextCycle ? (
+
+        <div className="mx-auto mt-10 max-w-2xl rounded-2xl border border-yellow-200 bg-white p-6 md:p-8 shadow-md">
+
+          <div className="flex items-center gap-3">
+
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-yellow-100 text-2xl">
+              📅
+            </div>
+
+            <div>
+
+              <p className="text-sm font-medium uppercase tracking-wide text-yellow-700">
+                Next Scholarship Cycle
+              </p>
+
+              <h3 className="text-2xl font-bold text-gray-900">
+                {nextCycle.title}
+              </h3>
+
+            </div>
+
+          </div>
+
+
+          <div className="mt-6 grid gap-4 sm:grid-cols-2">
+
+            <div className="rounded-xl bg-gray-50 p-4">
+
+              <p className="text-sm text-gray-500">
+                Scholarship Year
+              </p>
+
+              <p className="mt-1 text-lg font-semibold text-gray-900">
+                {nextCycle.scholarship_year}
+              </p>
+
+            </div>
+
+
+            <div className="rounded-xl bg-gray-50 p-4">
+
+              <p className="text-sm text-gray-500">
+                Application Opens
+              </p>
+
+              <p className="mt-1 text-lg font-semibold text-green-700">
+                {formatCycleDate(nextCycle.start_date)}
+              </p>
+
+            </div>
+
+
+            <div className="rounded-xl bg-gray-50 p-4 sm:col-span-2">
+
+              <p className="text-sm text-gray-500">
+                Application Period
+              </p>
+
+              <p className="mt-1 text-lg font-semibold text-gray-900">
+
+                {formatCycleDate(nextCycle.start_date)}
+
+                <span className="mx-2 text-gray-400">
+                  →
+                </span>
+
+                {formatCycleDate(nextCycle.end_date)}
+
+              </p>
+
+            </div>
+
+          </div>
+
+
+          <div className="mt-6 rounded-xl border border-blue-100 bg-blue-50 p-4">
+
+            <p className="text-sm leading-6 text-blue-800">
+
+              Applications will become available once this
+              scholarship cycle is activated by the
+              Vidya Jyothi Foundation.
+
+            </p>
+
+          </div>
+
+        </div>
+
+      ) : (
+
+        <div className="mx-auto mt-10 max-w-2xl rounded-2xl border border-gray-200 bg-white p-8 text-center shadow-md">
+
+          <div className="text-4xl">
+            📢
+          </div>
+
+          <h3 className="mt-4 text-2xl font-bold text-gray-800">
+            Next Scholarship Cycle Not Yet Announced
+          </h3>
+
+          <p className="mt-3 leading-7 text-gray-600">
+
+            The current scholarship applications are closed.
+            Please check back later for information about the
+            next scholarship cycle.
+
+          </p>
+
+        </div>
+
+      )}
+
+    </div>
+
+  </div>
+
+)}
+  
 
 
 

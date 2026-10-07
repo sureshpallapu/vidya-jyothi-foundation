@@ -89,7 +89,7 @@ function ScholarshipCTA() {
 
           {/* Status */}
 
-          <div
+          {/* <div
             className="
               mt-12
               inline-flex
@@ -108,7 +108,7 @@ function ScholarshipCTA() {
 
             Applications Opening Soon
 
-          </div>
+          </div> */}
 
           {/* Button */}
 
