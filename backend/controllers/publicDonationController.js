@@ -1170,6 +1170,107 @@ if (donation.status === "RECEIVED") {
 
 /*
 |--------------------------------------------------------------------------
+| Public Donor Leaderboard
+|--------------------------------------------------------------------------
+|
+| Returns yearly public donor statistics.
+|
+| IMPORTANT:
+| - Only RECEIVED / CLEARED donations are included.
+| - Archived donations are excluded.
+| - Highest donor is based on TOTAL contribution for that year.
+| - Anonymous donors are displayed as "Anonymous Donor".
+| - No private donor information is exposed.
+|
+|--------------------------------------------------------------------------
+*/
+
+/*
+|--------------------------------------------------------------------------
+| Public Donor Leaderboard
+|--------------------------------------------------------------------------
+*/
+
+
+async function getPublicDonorLeaderboard(req, res) {
+
+    try {
+
+        const leaderboard =
+            await DonationModel.getPublicDonorLeaderboard();
+
+        return res.status(200).json({
+            success: true,
+            message:
+                "Public donor leaderboard fetched successfully.",
+            data: leaderboard,
+        });
+
+    } catch (error) {
+
+        console.error(
+            "❌ Public Donor Leaderboard Error:",
+            error
+        );
+
+        return res.status(500).json({
+            success: false,
+            message:
+                "Unable to fetch public donor leaderboard.",
+        });
+    }
+
+    
+}
+
+/*
+|--------------------------------------------------------------------------
+| Public Top 5 Donors
+|--------------------------------------------------------------------------
+|
+| Returns the Top 5 donors for every donation year.
+|
+| Rules:
+| - Only RECEIVED / CLEARED donations
+| - Archived donations excluded
+| - Donor contributions are aggregated by year
+| - Maximum 5 donors per year
+| - Anonymous donors are protected
+| - No private donor information is exposed
+|
+|--------------------------------------------------------------------------
+*/
+
+async function getPublicTopDonors(req, res) {
+
+    try {
+
+        const topDonors =
+            await DonationModel.getPublicDonorList();
+
+        return res.status(200).json({
+            success: true,
+            message:
+                "Public top donors fetched successfully.",
+            data: topDonors,
+        });
+
+    } catch (error) {
+
+        console.error(
+            "❌ Public Top Donors Error:",
+            error
+        );
+
+        return res.status(500).json({
+            success: false,
+            message:
+                "Unable to fetch public top donors.",
+        });
+    }
+}
+/*
+|--------------------------------------------------------------------------
 | Export
 |--------------------------------------------------------------------------
 */
@@ -1179,6 +1280,10 @@ module.exports = {
     createDonationOrder,
 
     verifyDonationPayment,
+
+    getPublicDonorLeaderboard,
+
+    getPublicTopDonors
 
 };
 

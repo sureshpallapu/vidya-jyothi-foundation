@@ -229,6 +229,14 @@ const publicDonationRoutes =
     require("./routes/publicDonationRoutes");
 
 
+    const volunteerRoutes = require("./routes/volunteerRoutes");
+
+const notificationRoutes = require("./routes/notificationRoutes");
+
+const activityRoutes = require("./routes/activityRoutes");
+
+
+
 // ============================================================================
 // API ROUTES
 // ============================================================================
@@ -402,6 +410,19 @@ app.use(
 );
 
 
+
+app.use(
+    "/api/volunteers",
+    volunteerRoutes
+);
+
+
+app.use(
+  "/api/notifications",
+  notificationRoutes
+);
+
+app.use("/api/activities", activityRoutes);
 // ============================================================================
 // PUBLIC DONATIONS
 // ============================================================================
@@ -410,7 +431,18 @@ app.use(
     "/api/public/donations",
     publicDonationRoutes
 );
+/*
+|--------------------------------------------------------------------------
+| PUBLIC UPLOADS
+|--------------------------------------------------------------------------
+*/
 
+app.use(
+  "/uploads",
+  express.static(
+    path.join(__dirname, "uploads")
+  )
+);
 
 // ============================================================================
 // HEALTH / TEST ROUTES

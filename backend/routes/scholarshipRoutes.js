@@ -1,5 +1,9 @@
 
 const {
+  getScholarshipCycles,
+} = require("../models/scholarshipCycleModel");
+
+const {
   uploadDocuments,
   downloadDocument,
 } = require("../controllers/documentController");
@@ -64,5 +68,35 @@ router.get(
   "/documents/download/:applicationId/:fileName",
   downloadDocument
 );
+
+
+/*
+|--------------------------------------------------------------------------
+| Public Scholarship Cycle Information
+|--------------------------------------------------------------------------
+| Used by the public scholarship application page to determine:
+| - whether an active cycle exists
+| - which cycle is coming next
+|--------------------------------------------------------------------------
+*/
+
+router.get("/cycles", async (req, res) => {
+  try {
+    const cycles = await getScholarshipCycles();
+
+    res.status(200).json({
+      success: true,
+      data: cycles,
+    });
+  } catch (error) {
+    console.error("Error fetching scholarship cycles:", error);
+
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch scholarship cycle information.",
+    });
+  }
+});
+
 
 module.exports = router;

@@ -284,8 +284,42 @@ const deleteCycle = async (req, res) => {
 
 };
 
+
+/*
+|--------------------------------------------------------------------------
+| Get Public Scholarship Cycles
+|--------------------------------------------------------------------------
+*/
+
+const publicCyclesList = async (req, res) => {
+
+  try {
+
+    const cycles =
+      await getScholarshipCycles();
+
+    res.status(200).json({
+      success: true,
+      data: cycles,
+    });
+
+  } catch (error) {
+
+    console.error(error);
+
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch scholarship cycles.",
+    });
+
+  }
+
+};
+
+
 module.exports = {
   cyclesList,
+  publicCyclesList,
   cycleDetails,
   createCycle,
   updateCycle,

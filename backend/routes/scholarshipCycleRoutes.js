@@ -4,6 +4,7 @@ const router = express.Router();
 
 const {
   cyclesList,
+  publicCyclesList,
   cycleDetails,
   createCycle,
   updateCycle,
@@ -16,6 +17,12 @@ const {
 | Scholarship Cycle Routes
 |--------------------------------------------------------------------------
 */
+
+// Public Scholarship Cycles
+router.get(
+  "/public",
+  publicCyclesList
+);
 
 // Get All Scholarship Cycles
 router.get("/cycles", cyclesList);

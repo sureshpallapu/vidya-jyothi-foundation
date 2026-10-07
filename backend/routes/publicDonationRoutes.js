@@ -5,6 +5,11 @@ const router = express.Router();
 const {
     createDonationOrder,
     verifyDonationPayment,
+    getPublicTopDonors,
+} = require("../controllers/publicDonationController");
+
+const {
+    getPublicDonorLeaderboard,
 } = require("../controllers/publicDonationController");
 
 
@@ -31,5 +36,13 @@ router.post(
     verifyDonationPayment
 );
 
+router.get(
+    "/leaderboard",
+    getPublicDonorLeaderboard
+);
 
+router.get(
+    "/top-donors",
+    getPublicTopDonors
+);
 module.exports = router;

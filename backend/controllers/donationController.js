@@ -439,6 +439,40 @@ async getPaymentModes(req, res) {
 
 }
 
+
+/*
+|--------------------------------------------------------------------------
+| Public Donor Leaderboard
+|--------------------------------------------------------------------------
+*/
+
+async publicDonorLeaderboard(req, res) {
+
+    try {
+
+        const leaderboard =
+            await DonationModel.getPublicDonorLeaderboard();
+
+        return ApiResponse.success(
+            res,
+            "Public donor leaderboard fetched successfully.",
+            leaderboard
+        );
+
+    } catch (error) {
+
+        console.error(error);
+
+        return ApiResponse.error(
+            res,
+            "Failed to fetch public donor leaderboard."
+        );
+
+    }
+
+}
+
+
 }
 
 module.exports = new DonationController();

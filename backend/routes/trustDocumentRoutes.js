@@ -43,6 +43,13 @@ router.get(
   trustDocumentController.getAllDocuments
 );
 
+
+// Public Bank Records
+router.get(
+  "/bank-records",
+  trustDocumentController.getPublicBankRecords
+);
+
 // ===============================
 // Get Single Document
 // ===============================
@@ -116,5 +123,7 @@ router.get(
   // authenticateToken,
   trustDocumentController.downloadDocument
 );
+
+
 
 module.exports = router;

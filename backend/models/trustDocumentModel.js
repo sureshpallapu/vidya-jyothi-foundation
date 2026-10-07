@@ -291,6 +291,52 @@ const getStatistics = async () => {
   return stats;
 };
 
+/**
+ * Get Public Banking Records
+ *
+ * Only ACTIVE documents under the Banking category
+ * are exposed to the public website.
+ */
+const getPublicBankRecords = async () => {
+  const sql = `
+    SELECT
+      td.id,
+      td.document_code,
+      td.document_name,
+      td.document_number,
+      td.issuing_authority,
+      td.issue_date,
+      td.expiry_date,
+      td.description,
+      td.original_file_name,
+      td.file_extension,
+      td.file_size,
+      td.version,
+      td.status,
+      td.created_at,
+      td.updated_at,
+      dc.category_name
+
+    FROM trust_documents td
+
+    INNER JOIN document_categories dc
+      ON td.category_id = dc.id
+
+    WHERE
+      dc.category_name = 'Bank Statement'
+      AND td.status = 'ACTIVE'
+      AND LOWER(td.file_extension) = 'pdf'
+
+    ORDER BY
+      td.issue_date DESC,
+      td.created_at DESC
+  `;
+
+  const [rows] = await db.query(sql);
+
+  return rows;
+};
+
 module.exports = {
   createDocument,
   getAllDocuments,
@@ -301,4 +347,5 @@ module.exports = {
   getCategories,
   getStatistics,
   updateStatus,
+  getPublicBankRecords,
 };

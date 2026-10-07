@@ -358,6 +358,35 @@ const getStatistics = async (req, res) => {
   }
 };
 
+/**
+ * Get Public Bank Records
+ */
+const getPublicBankRecords = async (req, res) => {
+  try {
+    const records =
+      await trustDocumentModel.getPublicBankRecords();
+
+    return res.status(200).json({
+      success: true,
+      message: "Public bank records fetched successfully.",
+      data: records,
+    });
+
+  } catch (error) {
+
+    console.error(
+      "❌ Public Bank Records Error:",
+      error
+    );
+
+    return res.status(500).json({
+      success: false,
+      message: "Unable to fetch public bank records.",
+    });
+  }
+};
+
+
 module.exports = {
   createDocument,
   getAllDocuments,
@@ -369,4 +398,5 @@ module.exports = {
   previewDocument,
   getCategories,
   getStatistics,
+  getPublicBankRecords,
 };
